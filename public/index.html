@@ -388,36 +388,49 @@
         // ==========================================
 
         async function loadMenu() {
+
             try {
-                // Correctly calls the Vercel serverless API
+
                 const response = await fetch('/api/menu');
 
                 if (!response.ok) {
-                    throw new Error(`Could not load menu: ${response.statusText}`);
+                    throw new Error("Could not load menu");
                 }
 
                 const products = await response.json();
 
-                // Convert menu.json format into the format your existing website uses
+                // Convert menu.json format
+                // into the format your existing website uses
                 D = convertProducts(products);
 
                 // Show home page after menu is loaded
                 goHome();
 
             } catch (error) {
+
                 console.error("Menu loading error:", error);
 
                 const main = document.querySelector("main");
+
                 if (main) {
+
                     main.innerHTML = `
-                <div style="text-align:center; padding:50px 20px; color:#5a2d22;">
+                <div style="
+                    text-align:center;
+                    padding:50px 20px;
+                    color:#5a2d22;
+                ">
                     <h2>Unable to load menu</h2>
                     <p>Please make sure the server is running.</p>
                 </div>
             `;
+
                 }
+
             }
+
         }
+
 
         // ==========================================
         // CONVERT menu.json
@@ -434,8 +447,7 @@
                 const category =
                     product.category || "Other";
 
-                const subcategory =
-                    product.description || "Menu";
+                const subcategory = "Menu";
 
 
                 // Create category
