@@ -53,12 +53,12 @@ function requireAdmin(req, res, next) {
 // ========================================
 app.post("/api/admin/login", (req, res) => {
     const { username, password } = req.body;
-    
+
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         req.session.isAdmin = true;
         return res.json({ success: true, message: "Login successful" });
     }
-    
+
     return res.status(401).json({ success: false, message: "Invalid username or password" });
 });
 
@@ -96,21 +96,27 @@ app.get("/api/menu", async (req, res) => {
     }
 });
 
-app.get("/api/menu/:id", async (req, res) => {
+app.get("/api/menu", async (req, res) => {
     try {
         const { data, error } = await supabase
             .from("menu_items")
             .select("*")
-            .eq("id", String(req.params.id))
-            .single();
+            .order("name", { ascending: true });
 
         if (error) {
-            return res.status(404).json({ message: "Product not found" });
+            console.error("Supabase GET error:", error);
+            return res.status(500).json({
+                message: "Failed to load menu"
+            });
         }
+
         res.json(data);
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({
+            message: "Server error"
+        });
     }
 });
 

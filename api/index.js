@@ -16,6 +16,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 // ========================================
 // MIDDLEWARE
 // ========================================
+const app = require("../server/index");
+
 app.use(express.json({ limit: "10mb" }));
 
 app.use(
@@ -53,12 +55,12 @@ function requireAdmin(req, res, next) {
 // ========================================
 app.post("/api/admin/login", (req, res) => {
     const { username, password } = req.body;
-    
+
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         req.session.isAdmin = true;
         return res.json({ success: true, message: "Login successful" });
     }
-    
+
     return res.status(401).json({ success: false, message: "Invalid username or password" });
 });
 
@@ -228,13 +230,14 @@ app.get("/admin", (req, res) => {
 // ========================================
 // START SERVER & EXPORT
 // ========================================
-app.listen(PORT, () => {
-    console.log("\n=================================");
-    console.log(" New Desi Tadka Server Started");
-    console.log("=================================\n");
-    console.log(`Customer Menu: http://localhost:${PORT}`);
-    console.log(`Admin Panel:   http://localhost:${PORT}/admin\n`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log("\n=================================");
+        console.log(" New Desi Tadka Server Started");
+        console.log("=================================\n");
+        console.log(`Customer Menu: http://localhost:${PORT}`);
+        console.log(`Admin Panel:   http://localhost:${PORT}/admin\n`);
+    });
+}
 
-// VERY IMPORTANT FOR VERCEL:
 module.exports = app;
