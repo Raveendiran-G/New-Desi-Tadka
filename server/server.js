@@ -234,13 +234,14 @@ app.get("/admin", (req, res) => {
 // ========================================
 // START SERVER & EXPORT
 // ========================================
-app.listen(PORT, () => {
-    console.log("\n=================================");
-    console.log(" New Desi Tadka Server Started");
-    console.log("=================================\n");
-    console.log(`Customer Menu: http://localhost:${PORT}`);
-    console.log(`Admin Panel:   http://localhost:${PORT}/admin\n`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log("\n=================================");
+        console.log(" New Desi Tadka Server Started");
+        console.log("=================================\n");
+        console.log(`Customer Menu: http://localhost:${PORT}`);
+        console.log(`Admin Panel:   http://localhost:${PORT}/admin\n`);
+    });
+}
 
-// VERY IMPORTANT FOR VERCEL:
 module.exports = app;

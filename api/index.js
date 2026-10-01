@@ -4,7 +4,7 @@ const session = require("express-session");
 const path = require("path");
 const supabase = require("./supabase");
 
-const app = express();
+const app = require("../server/index");
 const PORT = process.env.PORT || 3000;
 
 // ========================================
