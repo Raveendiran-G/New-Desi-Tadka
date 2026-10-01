@@ -3,8 +3,7 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 const supabase = require("./supabase");
-
-const app = require("../server/index");
+const app = express();   
 const PORT = process.env.PORT || 3000;
 
 // ========================================
@@ -16,7 +15,6 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 // ========================================
 // MIDDLEWARE
 // ========================================
-const app = require("../server/index");
 
 app.use(express.json({ limit: "10mb" }));
 
