@@ -115,10 +115,10 @@ app.post(
 
         if (
             username ===
-                ADMIN_USERNAME &&
+            ADMIN_USERNAME &&
 
             password ===
-                ADMIN_PASSWORD
+            ADMIN_PASSWORD
         ) {
 
             req.session.isAdmin =
@@ -724,3 +724,5 @@ app.listen(
     }
 
 );
+
+module.exports = app;
