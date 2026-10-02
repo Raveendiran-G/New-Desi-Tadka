@@ -474,6 +474,15 @@
         // CATEGORY COVER
         // =====================================================
         function getCategoryCover(group, index) {
+            if (group.p === "Desserts") {
+        return `
+            <img 
+                src="https://i.pinimg.com/736x/ac/51/6e/ac516ec8555f086ce0b0ded85138dc5f.jpg"
+                alt="Desserts"
+                loading="lazy"
+            >
+        `;
+    }
             let key = COVER[index];
 
             if (!key || IMG[key] == null) {
