@@ -797,7 +797,7 @@
             const v = e.target.value.trim().toLowerCase(); if (!v) return cur != null ? openCat(cur, false) : goHome(); $('back').classList.add('hide'); let h = '';
             D.forEach(g => g.s.forEach(s => { const m = s.i.filter(i => (i.n + ' ' + s.n).toLowerCase().includes(v)); if (m.length) h += `<h3>${s.n}</h3><div class="g">${m.map(i => card(i, s)).join('')}</div>` })); $('out').innerHTML = h || '<p style="text-align:center;color:#777;padding:40px 0">No dishes found.</p>'
         };
-        goHome();
+        loadMenu();
     </script>
 </body>
 
