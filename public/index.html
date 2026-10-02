@@ -388,7 +388,50 @@
         // LOAD MENU FROM SERVER
         // ==========================================
 
-        async function loadMenu() {
+    async function loadMenu() {
+
+    // Show the home/category page immediately
+    // Don't wait for Supabase
+    goHome();
+
+    try {
+
+        const response = await fetch('/api/menu');
+
+        if (!response.ok) {
+            throw new Error("Could not load menu");
+        }
+
+        const products = await response.json();
+
+        // Update menu data when Supabase responds
+        D = convertProducts(products);
+
+        console.log("Menu loaded successfully:", products.length, "items");
+
+        /*
+         * If the user is still on the home page,
+         * refresh it with the latest menu data.
+         */
+        if (location.hash === "" || location.hash === "#home") {
+            goHome();
+        }
+
+    } catch (error) {
+
+        console.error("Menu loading error:", error);
+
+        /*
+         * IMPORTANT:
+         * Do NOT replace the whole page with
+         * "Unable to load menu".
+         *
+         * The home page is already visible.
+         * The menu can continue using the existing data.
+         */
+
+    }
+}
 
             try {
 
@@ -405,7 +448,7 @@
                 D = convertProducts(products);
 
                 // Show home page after menu is loaded
-                goHome();
+                goHoe();
 
             } catch (error) {
 
