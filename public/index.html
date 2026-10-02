@@ -383,281 +383,9 @@
 
         const $ = id => document.getElementById(id);
 
-
-        // ==========================================
-        // LOAD MENU FROM SERVER
-        // ==========================================
- async function loadMenu() {
-
-    try {
-
-        const response = await fetch("/api/menu");
-
-        if (!response.ok) {
-            throw new Error("Could not load menu");
-        }
-
-        const products = await response.json();
-
-        D = convertProducts(products);
-
-        console.log("Menu loaded:", D);
-
-        // Render the real menu
-        goHome();
-
-    } catch (error) {
-
-        console.error("Menu loading error:", error);
-
-        // Don't erase the page.
-        // Keep whatever is already rendered.
-
-    }
-}
-        // ----------------------------------------
-        // 1. Load previously saved menu immediately
-        // ----------------------------------------
-        try {
-
-            const cachedMenu = localStorage.getItem("desiTadkaMenu");
-
-            if (cachedMenu) {
-                const products = JSON.parse(cachedMenu);
-
-                D = convertProducts(products);
-
-                console.log("Loaded menu from cache");
-
-            }
-
-        } catch (error) {
-
-            console.warn("Could not load cached menu:", error);
-
-        }
-
-        // ----------------------------------------
-        // 2. Show homepage immediately
-        // ----------------------------------------
-        loadMenu();
-
-        // ----------------------------------------
-        // 3. Fetch latest menu in background
-        // ----------------------------------------
-        try {
-
-            const response = await fetch("/api/menu");
-
-            if (!response.ok) {
-                throw new Error("Could not load menu");
-            }
-
-            const products = await response.json();
-
-            // Save latest menu
-            localStorage.setItem(
-                "desiTadkaMenu",
-                JSON.stringify(products)
-            );
-
-            // Update current menu
-            D = convertProducts(products);
-
-            console.log(
-                "Latest menu loaded:",
-                products.length,
-                "items"
-            );
-
-            // Refresh home with latest data
-            if (
-                location.hash === "" ||
-                location.hash === "#home"
-            ) {
-                goHome();
-            }
-
-        } catch (error) {
-
-            console.error("Background menu loading error:", error);
-
-            // Don't destroy the page if API is temporarily slow.
-            // Cached/existing menu remains visible.
-        }
-
-
-        function showInstantHome() {
-
-            const categories = [
-                {
-                    name: "Starters",
-                    count: "Loading...",
-                    image: "Grill|Paneer Tikka",
-                    video: "/videos/desi-tadka-starters.mp4"
-                },
-                {
-                    name: "Main Course",
-                    count: "Loading...",
-                    image: "Biryani|Matka Biryani",
-                    video: "/videos/desi-tadka-main-course.mp4"
-                },
-                {
-                    name: "Breads",
-                    count: "Loading...",
-                    image: "Naan & Roti|Butter Naan",
-                    video: "/videos/desi-tadka-breads.mp4"
-                },
-                {
-                    name: "Beverages",
-                    count: "Loading...",
-                    image: "Paneer Gravy|Paneer Butter Masala",
-                    video: "/videos/desi-tadka-beverages.mp4"
-                },
-                {
-                    name: "Desserts",
-                    count: "Loading...",
-                    image: "Thali|Maharaja Thali (Limited)",
-                    video: "/videos/desi-tadka-desserts.mp4"
-                }
-            ];
-
-            const html = categories.map((c, index) => {
-
-                const imageIndex = IMG[c.image];
-
-                const image = imageIndex != null
-                    ? `<img src="${PIC[imageIndex]}" alt="${c.name}">`
-                    : "";
-
-                return `
-            <a class="cat instant-cat"
-               data-category="${index}"
-               href="javascript:void(0)">
-
-                <div class="ci">
-
-                    ${image}
-
-                    <video
-                        class="category-hover-video"
-                        muted
-                        loop
-                        playsinline
-                        preload="metadata">
-                        <source src="${c.video}" type="video/mp4">
-                    </video>
-
-                </div>
-
-                <div class="cn">
-                    ${c.name}
-                    <small>${c.count}</small>
-                </div>
-
-            </a>
-        `;
-
-            }).join("");
-
-            $("back").classList.add("hide");
-            $("ttl").textContent = "New Desi Tadka";
-
-            $("out").innerHTML = `
-        <h1>Menu</h1>
-        <div class="cats">
-            ${html}
-        </div>
-    `;
-
-            setupCategoryVideoHover();
-
-        }
-        // ==========================================
-        // CONVERT menu.json
-        // TO YOUR EXISTING D FORMAT
-        // ==========================================
-
-        function convertProducts(products) {
-
-            const categories = {};
-
-
-            products.forEach(product => {
-
-                const category =
-                    product.category || "Other";
-
-                const subcategory = "Menu";
-
-
-                // Create category
-                if (!categories[category]) {
-
-                    categories[category] = {};
-
-                }
-
-
-                // Create subcategory
-                if (!categories[category][subcategory]) {
-
-                    categories[category][subcategory] = [];
-
-                }
-
-
-                // Add product
-                categories[category][subcategory].push({
-
-                    n: product.name,
-
-                    p: product.price,
-
-                    image: product.image || null
-
-                });
-
-            });
-
-
-            // Convert to the format used by your existing functions
-            return Object.entries(categories).map(
-                ([category, subcategories]) => {
-
-                    return {
-
-                        p: category,
-
-                        s: Object.entries(subcategories).map(
-                            ([subcategory, items]) => {
-
-                                return {
-
-                                    n: subcategory,
-
-                                    e: "🍽️",
-
-                                    i: items
-
-                                };
-
-                            }
-                        )
-
-                    };
-
-                }
-            );
-
-        }
-
-
-        // ==========================================
-        // START MENU
-        // ==========================================
-
-        loadMenu();
+        // =====================================================
+        // CATEGORY HOVER VIDEOS
+        // =====================================================
         const CATEGORY_VIDEOS = {
             "Starters": "/videos/desi-tadka-starters.mp4",
             "Main Course": "/videos/desi-tadka-main-course.mp4",
@@ -665,138 +393,468 @@
             "Beverages": "/videos/desi-tadka-beverages.mp4",
             "Desserts": "/videos/desi-tadka-desserts.mp4"
         };
-        const COVER = ['Grill|Paneer Tikka', 'Biryani|Matka Biryani', 'Naan & Roti|Butter Naan', 'Paneer Gravy|Paneer Butter Masala', 'Thali|Maharaja Thali (Limited)', 'Ice Cream Sundae|Nutty Mania'];
-        const pic = (sn, n, e) => { const k = IMG[sn + '|' + n]; return k != null ? `<img src="${PIC[k]}" alt="${n}" loading="lazy">` : e };
-        const card = (it, s) => `<div class="card"><div class="im">${pic(s.n, it.n, s.e)}</div><div class="in"><div class="nm"><i class="v"></i><span>${it.n}</span></div><div class="pr">₹${it.p}</div></div></div>`;
-        function getCategoryVideo(category) {
 
-            const videos = {
-                "starters": "videos/desi-tadka-starters.mp4",
-                "main course": "videos/desi-tadka-main-course.mp4",
-                "breads": "videos/desi-tadka-breads.mp4",
-                "beverages": "videos/desi-tadka-beverages.mp4",
-                "desserts": "videos/desi-tadka-desserts.mp4"
-            };
+        // Images used for the category cover cards.
+        const COVER = [
+            "Grill|Paneer Tikka",
+            "Biryani|Matka Biryani",
+            "Naan & Roti|Butter Naan",
+            "Paneer Gravy|Paneer Butter Masala",
+            "Thali|Maharaja Thali (Limited)",
+            "Ice Cream Sundae|Nutty Mania"
+        ];
 
-            return videos[category.trim().toLowerCase()] || null;
-        }
+        // =====================================================
+        // CONVERT API PRODUCTS TO THE FORMAT USED BY THE UI
+        // =====================================================
+        function convertProducts(products) {
+            if (!Array.isArray(products)) return [];
 
+            const categories = {};
 
-        function cover(g, i) {
+            products.forEach(product => {
+                if (!product || !product.name) return;
 
-            let k = COVER[i];
+                const category = String(product.category || "Other").trim() || "Other";
+                const subcategory = String(product.description || "Menu").trim() || "Menu";
 
-            if (IMG[k] == null) {
+                if (!categories[category]) {
+                    categories[category] = {};
+                }
 
-                k = null;
+                if (!categories[category][subcategory]) {
+                    categories[category][subcategory] = [];
+                }
 
-                g.s.forEach(s =>
-                    s.i.forEach(it => {
-
-                        if (!k && IMG[s.n + '|' + it.n] != null) {
-                            k = s.n + '|' + it.n;
-                        }
-
-                    })
-                );
-            }
-
-            const image = k != null
-                ? `<img src="${PIC[IMG[k]]}" alt="${g.p}">`
-                : `<span>${g.s[0].e}</span>`;
-
-            const video = getCategoryVideo(g.p);
-
-            if (!video) {
-                return image;
-            }
-
-            return `
-        ${image}
-
-        <video
-            class="category-video"
-            muted
-            loop
-            playsinline
-            preload="metadata"
-        >
-            <source src="${video}" type="video/mp4">
-        </video>
-    `;
-        }
-
-        /* ==========================================
-    CATEGORY VIDEO HOVER
-    ========================================== */
-
-        document.addEventListener("mouseenter", function () {
-
-        }, true);
-
-
-        document.addEventListener("mouseover", function (e) {
-
-            const category = e.target.closest(".cat");
-
-            if (!category) return;
-
-            // Don't restart when moving between elements
-            // inside the same category card
-            if (category.contains(e.relatedTarget)) return;
-
-            const video = category.querySelector(".category-video");
-
-            if (!video) return;
-
-            category.classList.add("video-playing");
-
-            video.currentTime = 0;
-
-            video.play().catch(error => {
-                console.log("Video could not play:", error);
+                categories[category][subcategory].push({
+                    n: product.name,
+                    p: product.price ?? 0,
+                    image: product.image || null,
+                    video: product.video || null
+                });
             });
 
-        }, true);
-
-
-        document.addEventListener("mouseout", function (e) {
-
-            const category = e.target.closest(".cat");
-
-            if (!category) return;
-
-            // Don't stop when moving between elements
-            // inside the same category card
-            if (category.contains(e.relatedTarget)) return;
-
-            const video = category.querySelector(".category-video");
-
-            if (!video) return;
-
-            video.pause();
-            video.currentTime = 0;
-
-            category.classList.remove("video-playing");
-
-        }, true);
-        function home() {
-            $('back').classList.add('hide'); $('ttl').textContent = 'New Desi Tadka';
-            $('out').innerHTML = `<h1>Menu</h1><div class="cats">${D.map((g, i) => `<a class="cat" onclick="openCat(${i})"><div class="ci">${cover(g, i)}</div><div class="cn">${g.p}<small>${g.s.reduce((a, s) => a + s.i.length, 0)} items</small></div></a>`).join('')}</div>`
+            return Object.entries(categories).map(([category, subcategories]) => ({
+                p: category,
+                s: Object.entries(subcategories).map(([subcategory, items]) => ({
+                    n: subcategory,
+                    e: "🍽️",
+                    i: items
+                }))
+            }));
         }
-        function cat(i) {
-            const g = D[i]; $('back').classList.remove('hide'); $('ttl').textContent = g.p;
-            $('out').innerHTML = (g.s.length > 1 ? `<div class="chips">${g.s.map((s, j) => `<a onclick="document.getElementById('s${j}').scrollIntoView({behavior:'smooth'})">${s.n}</a>`).join('')}</div>` : '') + g.s.map((s, j) => `<h3 id="s${j}">${s.n}</h3><div class="g">${s.i.map(it => card(it, s)).join('')}</div>`).join('')
+
+        // =====================================================
+        // IMAGE HELPER
+        // =====================================================
+        function pic(subcategory, name, fallback) {
+            const key = subcategory + "|" + name;
+            const index = IMG[key];
+
+            if (index != null && PIC[index]) {
+                return `<img src="${PIC[index]}" alt="${escapeHtml(name)}" loading="lazy">`;
+            }
+
+            return fallback || "🍽️";
         }
-        let cur = null;
-        function goHome() { cur = null; $('q').value = ''; home(); scrollTo(0, 0) }
-        function openCat(i, push = true) { cur = i; $('q').value = ''; cat(i); scrollTo(0, 0); if (push) try { history.pushState({ c: i }, '') } catch (e) { } }
-        $('back').onclick = () => { if (history.state && history.state.c != null) { try { history.back(); return } catch (e) { } } goHome() };
-        addEventListener('popstate', e => { e.state && e.state.c != null ? openCat(e.state.c, false) : goHome() });
-        $('q').oninput = e => {
-            const v = e.target.value.trim().toLowerCase(); if (!v) return cur != null ? openCat(cur, false) : goHome(); $('back').classList.add('hide'); let h = '';
-            D.forEach(g => g.s.forEach(s => { const m = s.i.filter(i => (i.n + ' ' + s.n).toLowerCase().includes(v)); if (m.length) h += `<h3>${s.n}</h3><div class="g">${m.map(i => card(i, s)).join('')}</div>` })); $('out').innerHTML = h || '<p style="text-align:center;color:#777;padding:40px 0">No dishes found.</p>'
+
+        // =====================================================
+        // SAFE HTML TEXT
+        // =====================================================
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // =====================================================
+        // CATEGORY COVER
+        // =====================================================
+        function getCategoryCover(group, index) {
+            let key = COVER[index];
+
+            if (!key || IMG[key] == null) {
+                key = null;
+
+                for (const sub of group.s || []) {
+                    for (const item of sub.i || []) {
+                        const itemKey = sub.n + "|" + item.n;
+                        if (IMG[itemKey] != null) {
+                            key = itemKey;
+                            break;
+                        }
+                    }
+                    if (key) break;
+                }
+            }
+
+            if (key && IMG[key] != null && PIC[IMG[key]]) {
+                return `<img src="${PIC[IMG[key]]}" alt="${escapeHtml(group.p)}" loading="lazy">`;
+            }
+
+            return `<span aria-hidden="true">🍽️</span>`;
+        }
+
+        // =====================================================
+        // CATEGORY CARD
+        // =====================================================
+        function categoryCard(group, index) {
+            const video = CATEGORY_VIDEOS[group.p] || "";
+            const count = (group.s || []).reduce(
+                (total, sub) => total + ((sub.i || []).length),
+                0
+            );
+
+            return `
+                <a class="cat" href="#" data-category-index="${index}" aria-label="Open ${escapeHtml(group.p)}">
+                    <div class="ci">
+                        ${getCategoryCover(group, index)}
+                        ${video ? `
+                            <video class="category-video"
+                                   muted
+                                   loop
+                                   playsinline
+                                   preload="metadata"
+                                   aria-hidden="true">
+                                <source src="${video}" type="video/mp4">
+                            </video>
+                        ` : ""}
+                    </div>
+                    <div class="cn">
+                        ${escapeHtml(group.p)}
+                        <small>${count} items</small>
+                    </div>
+                </a>
+            `;
+        }
+
+        // =====================================================
+        // DISH CARD + OPTIONAL PRODUCT HOVER VIDEO
+        // =====================================================
+        const PRODUCT_VIDEOS = {
+            // Example:
+            // "Grill|Paneer Tikka": "/videos/paneer-tikka.mp4"
         };
+
+        function card(item, subcategory) {
+            const key = subcategory.n + "|" + item.n;
+            const video = item.video || PRODUCT_VIDEOS[key] || "";
+
+            return `
+                <div class="card" data-product="${escapeHtml(key)}">
+                    <div class="im">
+                        ${pic(subcategory.n, item.n, subcategory.e)}
+                        ${video ? `
+                            <video class="product-hover-video"
+                                   muted
+                                   loop
+                                   playsinline
+                                   preload="metadata"
+                                   aria-hidden="true">
+                                <source src="${video}" type="video/mp4">
+                            </video>
+                        ` : ""}
+                    </div>
+                    <div class="in">
+                        <div class="nm">
+                            <i class="v" aria-hidden="true"></i>
+                            <span>${escapeHtml(item.n)}</span>
+                        </div>
+                        <div class="pr">₹${escapeHtml(item.p)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // =====================================================
+        // HOME PAGE
+        // =====================================================
+        function home() {
+            $("back").classList.add("hide");
+            $("ttl").textContent = "New Desi Tadka";
+
+            if (!D.length) {
+                $("out").innerHTML = `
+                    <h1>Menu</h1>
+                    <div class="menu-message">
+                        <div class="menu-loader"></div>
+                        <p>Loading menu...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            $("out").innerHTML = `
+                <h1>Menu</h1>
+                <div class="cats">
+                    ${D.map((group, index) => categoryCard(group, index)).join("")}
+                </div>
+            `;
+
+            setupCategoryVideoHover();
+        }
+
+        // =====================================================
+        // CATEGORY PAGE
+        // =====================================================
+        function cat(index) {
+            const group = D[index];
+            if (!group) {
+                goHome();
+                return;
+            }
+
+            $("back").classList.remove("hide");
+            $("ttl").textContent = group.p;
+
+            const chips = group.s.length > 1
+                ? `
+                    <div class="chips">
+                        ${group.s.map((sub, j) => `
+                            <a href="#" data-sub-index="${j}">${escapeHtml(sub.n)}</a>
+                        `).join("")}
+                    </div>
+                `
+                : "";
+
+            const sections = group.s.map((sub, j) => `
+                <h3 id="s${j}">${escapeHtml(sub.n)}</h3>
+                <div class="g">
+                    ${(sub.i || []).map(item => card(item, sub)).join("")}
+                </div>
+            `).join("");
+
+            $("out").innerHTML = chips + sections;
+
+            setupProductVideoHover();
+
+            $("out").querySelectorAll("[data-sub-index]").forEach(link => {
+                link.addEventListener("click", event => {
+                    event.preventDefault();
+                    const target = $("s" + link.dataset.subIndex);
+                    if (target) target.scrollIntoView({ behavior: "smooth" });
+                });
+            });
+        }
+
+        // =====================================================
+        // CATEGORY VIDEO HOVER
+        // =====================================================
+        function setupCategoryVideoHover() {
+            document.querySelectorAll(".cat").forEach(category => {
+                const video = category.querySelector(".category-video");
+                if (!video) return;
+
+                category.onmouseenter = () => {
+                    category.classList.add("video-playing");
+                    video.currentTime = 0;
+                    video.play().catch(() => {});
+                };
+
+                category.onmouseleave = () => {
+                    video.pause();
+                    video.currentTime = 0;
+                    category.classList.remove("video-playing");
+                };
+
+                category.onclick = event => {
+                    event.preventDefault();
+                    const index = Number(category.dataset.categoryIndex);
+                    openCat(index);
+                };
+            });
+        }
+
+        // =====================================================
+        // PRODUCT VIDEO HOVER
+        // =====================================================
+        function setupProductVideoHover() {
+            document.querySelectorAll(".card").forEach(cardElement => {
+                const video = cardElement.querySelector(".product-hover-video");
+                if (!video) return;
+
+                cardElement.onmouseenter = () => {
+                    cardElement.classList.add("video-playing");
+                    video.currentTime = 0;
+                    video.play().catch(() => {});
+                };
+
+                cardElement.onmouseleave = () => {
+                    video.pause();
+                    video.currentTime = 0;
+                    cardElement.classList.remove("video-playing");
+                };
+            });
+        }
+
+        // =====================================================
+        // ROUTING
+        // =====================================================
+        let cur = null;
+
+        function goHome() {
+            cur = null;
+            $("q").value = "";
+            home();
+            window.scrollTo(0, 0);
+        }
+
+        function openCat(index, push = true) {
+            if (!D[index]) return;
+
+            cur = index;
+            $("q").value = "";
+            cat(index);
+            window.scrollTo(0, 0);
+
+            if (push) {
+                try {
+                    history.pushState({ c: index }, "", "#category-" + index);
+                } catch (error) {
+                    console.warn("History update failed:", error);
+                }
+            }
+        }
+
+        $("back").onclick = () => {
+            if (history.state && history.state.c != null) {
+                try {
+                    history.back();
+                    return;
+                } catch (error) {
+                    // Fall through to home.
+                }
+            }
+            goHome();
+        };
+
+        window.addEventListener("popstate", event => {
+            if (event.state && event.state.c != null && D[event.state.c]) {
+                openCat(event.state.c, false);
+            } else {
+                goHome();
+            }
+        });
+
+        // =====================================================
+        // SEARCH
+        // =====================================================
+        $("q").oninput = event => {
+            const value = event.target.value.trim().toLowerCase();
+
+            if (!value) {
+                cur != null ? openCat(cur, false) : goHome();
+                return;
+            }
+
+            $("back").classList.add("hide");
+
+            let html = "";
+
+            D.forEach(group => {
+                group.s.forEach(sub => {
+                    const matches = (sub.i || []).filter(item =>
+                        (item.n + " " + sub.n + " " + group.p)
+                            .toLowerCase()
+                            .includes(value)
+                    );
+
+                    if (matches.length) {
+                        html += `
+                            <h3>${escapeHtml(sub.n)}</h3>
+                            <div class="g">
+                                ${matches.map(item => card(item, sub)).join("")}
+                            </div>
+                        `;
+                    }
+                });
+            });
+
+            $("out").innerHTML = html || `
+                <p style="text-align:center;color:#777;padding:40px 0">
+                    No dishes found.
+                </p>
+            `;
+
+            setupProductVideoHover();
+        };
+
+        // =====================================================
+        // LOAD MENU
+        // =====================================================
+        async function loadMenu() {
+            // Render cache first, so the screen is not blank while the API loads.
+            try {
+                const cached = localStorage.getItem("desiTadkaMenu");
+                if (cached) {
+                    const products = JSON.parse(cached);
+                    const cachedData = convertProducts(products);
+                    if (cachedData.length) {
+                        D = cachedData;
+                        goHome();
+                    }
+                }
+            } catch (error) {
+                console.warn("Could not load cached menu:", error);
+            }
+
+            // Show a visible loading state if there is no cached menu.
+            if (!D.length) {
+                home();
+            }
+
+            // Get the latest menu from the server.
+            try {
+                const response = await fetch("/api/menu", {
+                    method: "GET",
+                    headers: { "Accept": "application/json" },
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Menu API returned HTTP ${response.status}`);
+                }
+
+                const products = await response.json();
+                const latestData = convertProducts(products);
+
+                if (!latestData.length) {
+                    throw new Error("Menu API returned no products");
+                }
+
+                localStorage.setItem("desiTadkaMenu", JSON.stringify(products));
+                D = latestData;
+
+                // Only redraw home if the user is currently on home.
+                if (cur == null) {
+                    goHome();
+                }
+
+                console.log("Menu loaded successfully:", products.length, "products");
+            } catch (error) {
+                console.error("Menu loading error:", error);
+
+                // Keep cached data if available. Otherwise show a useful message.
+                if (!D.length) {
+                    $("out").innerHTML = `
+                        <h1>Menu</h1>
+                        <div class="menu-message error">
+                            <strong>Unable to load the menu</strong>
+                            <p>Make sure the server is running and <code>/api/menu</code> is available.</p>
+                            <button id="retryMenu" type="button">Retry</button>
+                        </div>
+                    `;
+
+                    $("retryMenu").onclick = loadMenu;
+                }
+            }
+        }
+
+        // Start once, after every function used by loadMenu has been defined.
+        goHome();
         loadMenu();
     </script>
 </body>
