@@ -387,81 +387,196 @@
         // ==========================================
         // LOAD MENU FROM SERVER
         // ==========================================
-async function loadMenu() {
+        async function loadMenu() {
 
-    // ----------------------------------------
-    // 1. Load previously saved menu immediately
-    // ----------------------------------------
-    try {
+            // Show category cards immediately
+            showInstantHome();
 
-        const cachedMenu = localStorage.getItem("desiTadkaMenu");
+            try {
 
-        if (cachedMenu) {
-            const products = JSON.parse(cachedMenu);
+                const response = await fetch("/api/menu");
 
+                if (!response.ok) {
+                    throw new Error("Could not load menu");
+                }
+
+                const products = await response.json();
+
+                // Convert Supabase data
+                D = convertProducts(products);
+
+                console.log("Menu loaded:", products.length, "items");
+
+                // Now replace temporary home with real data
+                goHome();
+
+            } catch (error) {
+
+                console.error("Background menu loading error:", error);
+
+                // Keep the instant category page visible.
+                // Do NOT replace it with "Unable to load menu".
+            }
+        }
+
+        // ----------------------------------------
+        // 1. Load previously saved menu immediately
+        // ----------------------------------------
+        try {
+
+            const cachedMenu = localStorage.getItem("desiTadkaMenu");
+
+            if (cachedMenu) {
+                const products = JSON.parse(cachedMenu);
+
+                D = convertProducts(products);
+
+                console.log("Loaded menu from cache");
+
+            }
+
+        } catch (error) {
+
+            console.warn("Could not load cached menu:", error);
+
+        }
+
+        // ----------------------------------------
+        // 2. Show homepage immediately
+        // ----------------------------------------
+        goHome();
+
+        // ----------------------------------------
+        // 3. Fetch latest menu in background
+        // ----------------------------------------
+        try {
+
+            const response = await fetch("/api/menu");
+
+            if (!response.ok) {
+                throw new Error("Could not load menu");
+            }
+
+            const products = await response.json();
+
+            // Save latest menu
+            localStorage.setItem(
+                "desiTadkaMenu",
+                JSON.stringify(products)
+            );
+
+            // Update current menu
             D = convertProducts(products);
 
-            console.log("Loaded menu from cache");
+            console.log(
+                "Latest menu loaded:",
+                products.length,
+                "items"
+            );
 
+            // Refresh home with latest data
+            if (
+                location.hash === "" ||
+                location.hash === "#home"
+            ) {
+                goHome();
+            }
+
+        } catch (error) {
+
+            console.error("Background menu loading error:", error);
+
+            // Don't destroy the page if API is temporarily slow.
+            // Cached/existing menu remains visible.
         }
 
-    } catch (error) {
 
-        console.warn("Could not load cached menu:", error);
+        function showInstantHome() {
 
-    }
+            const categories = [
+                {
+                    name: "Starters",
+                    count: "Loading...",
+                    image: "Grill|Paneer Tikka",
+                    video: "/videos/desi-tadka-starters.mp4"
+                },
+                {
+                    name: "Main Course",
+                    count: "Loading...",
+                    image: "Biryani|Matka Biryani",
+                    video: "/videos/desi-tadka-main-course.mp4"
+                },
+                {
+                    name: "Breads",
+                    count: "Loading...",
+                    image: "Naan & Roti|Butter Naan",
+                    video: "/videos/desi-tadka-breads.mp4"
+                },
+                {
+                    name: "Beverages",
+                    count: "Loading...",
+                    image: "Paneer Gravy|Paneer Butter Masala",
+                    video: "/videos/desi-tadka-beverages.mp4"
+                },
+                {
+                    name: "Desserts",
+                    count: "Loading...",
+                    image: "Thali|Maharaja Thali (Limited)",
+                    video: "/videos/desi-tadka-desserts.mp4"
+                }
+            ];
 
-    // ----------------------------------------
-    // 2. Show homepage immediately
-    // ----------------------------------------
-    goHome();
+            const html = categories.map((c, index) => {
 
-    // ----------------------------------------
-    // 3. Fetch latest menu in background
-    // ----------------------------------------
-    try {
+                const imageIndex = IMG[c.image];
 
-        const response = await fetch("/api/menu");
+                const image = imageIndex != null
+                    ? `<img src="${PIC[imageIndex]}" alt="${c.name}">`
+                    : "";
 
-        if (!response.ok) {
-            throw new Error("Could not load menu");
+                return `
+            <a class="cat instant-cat"
+               data-category="${index}"
+               href="javascript:void(0)">
+
+                <div class="ci">
+
+                    ${image}
+
+                    <video
+                        class="category-hover-video"
+                        muted
+                        loop
+                        playsinline
+                        preload="metadata">
+                        <source src="${c.video}" type="video/mp4">
+                    </video>
+
+                </div>
+
+                <div class="cn">
+                    ${c.name}
+                    <small>${c.count}</small>
+                </div>
+
+            </a>
+        `;
+
+            }).join("");
+
+            $("back").classList.add("hide");
+            $("ttl").textContent = "New Desi Tadka";
+
+            $("out").innerHTML = `
+        <h1>Menu</h1>
+        <div class="cats">
+            ${html}
+        </div>
+    `;
+
+            setupCategoryVideoHover();
+
         }
-
-        const products = await response.json();
-
-        // Save latest menu
-        localStorage.setItem(
-            "desiTadkaMenu",
-            JSON.stringify(products)
-        );
-
-        // Update current menu
-        D = convertProducts(products);
-
-        console.log(
-            "Latest menu loaded:",
-            products.length,
-            "items"
-        );
-
-        // Refresh home with latest data
-        if (
-            location.hash === "" ||
-            location.hash === "#home"
-        ) {
-            goHome();
-        }
-
-    } catch (error) {
-
-        console.error("Background menu loading error:", error);
-
-        // Don't destroy the page if API is temporarily slow.
-        // Cached/existing menu remains visible.
-    }
-}
-
-
         // ==========================================
         // CONVERT menu.json
         // TO YOUR EXISTING D FORMAT
