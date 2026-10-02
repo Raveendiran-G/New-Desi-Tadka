@@ -653,54 +653,47 @@
         // CATEGORY VIDEO HOVER
         // =====================================================
         function setupCategoryVideoHover() {
-            const categories = document.querySelectorAll(".cat");
-
-            categories.forEach(category => {
+            document.querySelectorAll(".cat").forEach(category => {
                 const video = category.querySelector(".category-video");
 
                 if (!video) return;
 
-                // Only hide the image AFTER the video actually starts
-                video.addEventListener("playing", () => {
-                    category.classList.add("video-playing");
-                });
-
-                // If video fails, keep the image visible
-                video.addEventListener("error", () => {
-                    category.classList.remove("video-playing");
-                });
-
                 // Desktop hover
-                category.addEventListener("mouseenter", () => {
+                category.onmouseenter = () => {
+                    category.classList.add("video-playing");
+
                     video.currentTime = 0;
 
-                    video.play()
-                        .then(() => {
-                            category.classList.add("video-playing");
-                        })
-                        .catch(() => {
-                            category.classList.remove("video-playing");
-                        });
-                });
+                    video.play().catch(() => {
+                        // If video cannot play, keep the image visible
+                        category.classList.remove("video-playing");
+                    });
+                };
 
-                category.addEventListener("mouseleave", () => {
+                category.onmouseleave = () => {
                     video.pause();
                     video.currentTime = 0;
                     category.classList.remove("video-playing");
-                });
+                };
 
                 // Mobile tap
                 category.addEventListener("touchstart", () => {
+                    category.classList.add("video-playing");
+
                     video.currentTime = 0;
 
-                    video.play()
-                        .then(() => {
-                            category.classList.add("video-playing");
-                        })
-                        .catch(() => {
-                            category.classList.remove("video-playing");
-                        });
+                    video.play().catch(() => {
+                        category.classList.remove("video-playing");
+                    });
                 }, { passive: true });
+
+                // Category click/navigation
+                category.onclick = event => {
+                    event.preventDefault();
+
+                    const index = Number(category.dataset.categoryIndex);
+                    openCat(index);
+                };
             });
         }
         const categories = document.querySelectorAll(".cat");
