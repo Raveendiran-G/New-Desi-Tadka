@@ -654,18 +654,17 @@
         // =====================================================
         function setupCategoryVideoHover() {
             document.querySelectorAll(".cat").forEach(category => {
+
                 const video = category.querySelector(".category-video");
 
                 if (!video) return;
 
-                // Desktop hover
                 category.onmouseenter = () => {
                     category.classList.add("video-playing");
 
                     video.currentTime = 0;
 
                     video.play().catch(() => {
-                        // If video cannot play, keep the image visible
                         category.classList.remove("video-playing");
                     });
                 };
@@ -673,25 +672,17 @@
                 category.onmouseleave = () => {
                     video.pause();
                     video.currentTime = 0;
+
                     category.classList.remove("video-playing");
                 };
 
-                // Mobile tap
-                category.addEventListener("touchstart", () => {
-                    category.classList.add("video-playing");
-
-                    video.currentTime = 0;
-
-                    video.play().catch(() => {
-                        category.classList.remove("video-playing");
-                    });
-                }, { passive: true });
-
-                // Category click/navigation
                 category.onclick = event => {
                     event.preventDefault();
 
-                    const index = Number(category.dataset.categoryIndex);
+                    const index = Number(
+                        category.dataset.categoryIndex
+                    );
+
                     openCat(index);
                 };
             });
