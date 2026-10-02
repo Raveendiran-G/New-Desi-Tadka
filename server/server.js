@@ -225,12 +225,12 @@ app.delete("/api/menu/:id", requireAdmin, async (req, res) => {
 // ========================================
 // HTML PAGE ROUTES (For local dev)
 // ========================================
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../index.html"));
+app.get("/admin", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public/admin.html"));
 });
 
-app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "../admin.html"));
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // ========================================
