@@ -387,38 +387,34 @@
         // ==========================================
         // LOAD MENU FROM SERVER
         // ==========================================
-        async function loadMenu() {
+ async function loadMenu() {
 
-            // Show category cards immediately
-            showInstantHome();
+    try {
 
-            try {
+        const response = await fetch("/api/menu");
 
-                const response = await fetch("/api/menu");
-
-                if (!response.ok) {
-                    throw new Error("Could not load menu");
-                }
-
-                const products = await response.json();
-
-                // Convert Supabase data
-                D = convertProducts(products);
-
-                console.log("Menu loaded:", products.length, "items");
-
-                // Now replace temporary home with real data
-                goHome();
-
-            } catch (error) {
-
-                console.error("Background menu loading error:", error);
-
-                // Keep the instant category page visible.
-                // Do NOT replace it with "Unable to load menu".
-            }
+        if (!response.ok) {
+            throw new Error("Could not load menu");
         }
 
+        const products = await response.json();
+
+        D = convertProducts(products);
+
+        console.log("Menu loaded:", D);
+
+        // Render the real menu
+        goHome();
+
+    } catch (error) {
+
+        console.error("Menu loading error:", error);
+
+        // Don't erase the page.
+        // Keep whatever is already rendered.
+
+    }
+}
         // ----------------------------------------
         // 1. Load previously saved menu immediately
         // ----------------------------------------
@@ -444,7 +440,7 @@
         // ----------------------------------------
         // 2. Show homepage immediately
         // ----------------------------------------
-        goHome();
+        loadMenu();
 
         // ----------------------------------------
         // 3. Fetch latest menu in background
