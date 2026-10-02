@@ -475,14 +475,14 @@
         // =====================================================
         function getCategoryCover(group, index) {
             if (group.p === "Desserts") {
-        return `
+                return `
             <img 
-                src="https://chatgpt.com/s/m_6abf59d4cc5c8191b78f0168d8d087d0"
+                src="/images/deserts.png"
                 alt="Desserts"
                 loading="lazy"
             >
         `;
-    }
+            }
             let key = COVER[index];
 
             if (!key || IMG[key] == null) {
@@ -660,7 +660,7 @@
                 category.onmouseenter = () => {
                     category.classList.add("video-playing");
                     video.currentTime = 0;
-                    video.play().catch(() => {});
+                    video.play().catch(() => { });
                 };
 
                 category.onmouseleave = () => {
@@ -688,7 +688,7 @@
                 cardElement.onmouseenter = () => {
                     cardElement.classList.add("video-playing");
                     video.currentTime = 0;
-                    video.play().catch(() => {});
+                    video.play().catch(() => { });
                 };
 
                 cardElement.onmouseleave = () => {
