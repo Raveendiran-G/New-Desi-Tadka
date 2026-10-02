@@ -653,24 +653,76 @@
         // CATEGORY VIDEO HOVER
         // =====================================================
         function setupCategoryVideoHover() {
-            document.querySelectorAll(".cat").forEach(category => {
-                const video = category.querySelector(".category-video");
-                if (!video) return;
+            const categories = document.querySelectorAll(".cat");
 
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const category = entry.target;
+                    const video = category.querySelector(".category-video");
+
+                    if (!video) return;
+
+                    if (entry.isIntersecting) {
+                        // Start video when visible
+                        category.classList.add("video-playing");
+
+                        video.currentTime = 0;
+
+                        video.play().catch(() => {
+                            console.log("Video autoplay blocked");
+                        });
+
+                    } else {
+                        // Stop video when it leaves screen
+                        video.pause();
+                        video.currentTime = 0;
+
+                        category.classList.remove("video-playing");
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+
+            categories.forEach(category => {
+                observer.observe(category);
+
+                // Desktop hover
                 category.onmouseenter = () => {
+                    const video = category.querySelector(".category-video");
+
+                    if (!video) return;
+
                     category.classList.add("video-playing");
                     video.currentTime = 0;
                     video.play().catch(() => { });
                 };
 
                 category.onmouseleave = () => {
+                    const video = category.querySelector(".category-video");
+
+                    if (!video) return;
+
                     video.pause();
                     video.currentTime = 0;
                     category.classList.remove("video-playing");
                 };
 
+                // Mobile tap
+                category.addEventListener("touchstart", () => {
+                    const video = category.querySelector(".category-video");
+
+                    if (!video) return;
+
+                    category.classList.add("video-playing");
+                    video.currentTime = 0;
+                    video.play().catch(() => { });
+                }, { passive: true });
+
+                // Keep your category navigation
                 category.onclick = event => {
                     event.preventDefault();
+
                     const index = Number(category.dataset.categoryIndex);
                     openCat(index);
                 };
