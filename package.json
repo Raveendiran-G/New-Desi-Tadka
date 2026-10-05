@@ -20,9 +20,12 @@
    "homepage": "https://github.com/Raveendiran-G/New-Desi-Tadka#readme",
    "dependencies": {
       "@supabase/supabase-js": "^2.117.2",
+      "cookie-parser": "^1.4.7",
       "dotenv": "^18.0.5",
       "express": "^5.2.1",
       "express-session": "^1.19.0",
+      "google-auth-library": "^11.1.0",
+      "jsonwebtoken": "^9.0.3",
       "multer": "^2.4.0"
    }
 }

@@ -7,7 +7,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>New Desi Tadka — Admin</title>
+
+    <title>New Desi Tadka</title>
     <link rel="icon" type="image/png" href="/images/logo.png">
     <style>
         :root {
@@ -24,6 +25,53 @@
             box-sizing: border-box;
         }
 
+        .login-box {
+            text-align: center;
+        }
+
+        .admin-logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+            overflow: hidden;
+
+            border: 3px solid #f07818;
+            background: #fff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .admin-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .login-box h1 {
+            margin: 0;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .google-button-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         body {
             margin: 0;
             font-family:
@@ -38,8 +86,8 @@
         }
 
         /* =========================
-   LOGIN
-========================= */
+         LOGIN
+        ========================= */
 
         .login-page {
 
@@ -578,6 +626,8 @@
             }
         }
     </style>
+    <script src="https://accounts.google.com/gsi/client" async defer>
+    </script>
 
 </head>
 
@@ -591,45 +641,25 @@
 
         <div class="login-box">
 
-            <div class="login-logo">
-
-                <h1>New Desi Tadka</h1>
-
-                <p>ADMIN PANEL</p>
-
+            <!-- 1. LOGO -->
+            <div class="admin-logo">
+                <img src="/images/logo.png" alt="New Desi Tadka Logo">
             </div>
 
-            <form id="loginForm">
+            <!-- 2. TITLE -->
+            <h1>New Desi Tadka</h1>
 
-                <div class="login-field">
+            <!-- 3. ADMIN PANEL -->
+            <div class="subtitle">
+                ADMIN PANEL
+            </div>
 
-                    <label>
-                        Username
-                    </label>
+            <!-- 4. GOOGLE LOGIN -->
+            <div id="googleButton" class="google-button-container">
+            </div>
 
-                    <input id="username" type="text" required autocomplete="username">
-
-                </div>
-
-                <div class="login-field">
-
-                    <label>
-                        Password
-                    </label>
-
-                    <input id="password" type="password" required autocomplete="current-password">
-
-                </div>
-
-                <button class="login-button" type="submit">
-                    Login
-                </button>
-
-                <div class="login-error" id="loginError">
-                    Invalid username or password
-                </div>
-
-            </form>
+            <div class="login-error" id="loginError">
+            </div>
 
         </div>
 
@@ -999,77 +1029,147 @@
         }
 
 
-        // =========================
-        // LOGIN
-        // =========================
 
-        $("loginForm")
-            .addEventListener(
-                "submit",
-                async event => {
 
-                    event.preventDefault();
+        // ========================================
+        // GOOGLE LOGIN
+        // ========================================
 
-                    const username =
-                        $("username").value.trim();
+        function handleGoogleLogin(response) {
 
-                    const password =
-                        $("password").value;
+            fetch(
+                "/api/admin/google-login",
+                {
+                    method: "POST",
 
-                    try {
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                        const response =
-                            await fetch(
-                                "/api/admin/login",
-                                {
-                                    method: "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
-
-                                    body: JSON.stringify({
-                                        username,
-                                        password
-                                    })
-                                }
-                            );
+                    body: JSON.stringify({
+                        credential:
+                            response.credential
+                    })
+                }
+            )
+                .then(
+                    async response => {
 
                         const data =
                             await response.json();
 
+
                         if (!response.ok) {
 
-                            $("loginError")
-                                .style.display = "block";
-
-                            $("loginError")
-                                .textContent =
+                            throw new Error(
                                 data.message ||
-                                "Login failed";
+                                "Google login failed"
+                            );
 
-                            return;
                         }
 
+
                         $("loginError")
-                            .style.display = "none";
+                            .style.display =
+                            "none";
+
 
                         showDashboard();
 
-                    } catch (error) {
+                    }
+                )
+                .catch(
+                    error => {
+
+                        console.error(
+                            "Google login error:",
+                            error
+                        );
+
 
                         $("loginError")
-                            .style.display = "block";
+                            .style.display =
+                            "block";
+
 
                         $("loginError")
                             .textContent =
-                            "Could not connect to server.";
+                            error.message;
 
                     }
+                );
 
+        }
+
+
+        // ========================================
+        // INITIALIZE GOOGLE BUTTON
+        // ========================================
+
+        function initializeGoogleLogin() {
+
+            if (
+                typeof google === "undefined" ||
+                !google.accounts
+            ) {
+
+                console.error(
+                    "Google Sign-In library has not loaded."
+                );
+
+                return;
+
+            }
+
+
+            google.accounts.id.initialize({
+
+                client_id:
+                    "132884412252-jokiu99i47enkg2ciugap6lqpgfk7vnk.apps.googleusercontent.com",
+
+                callback:
+                    handleGoogleLogin
+
+            });
+
+
+            google.accounts.id.renderButton(
+
+                $("googleButton"),
+
+                {
+                    theme:
+                        "outline",
+
+                    size:
+                        "large",
+
+                    text:
+                        "signin_with",
+
+                    shape:
+                        "rectangular",
+
+                    width:
+                        350
                 }
+
             );
+
+        }
+
+
+        // ========================================
+        // START
+        // ========================================
+
+        window.addEventListener(
+            "load",
+            initializeGoogleLogin
+        );
+
+
 
 
         // =========================
