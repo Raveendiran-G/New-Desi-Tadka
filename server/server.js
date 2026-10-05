@@ -32,7 +32,7 @@ const googleClient =
 // Only these 2 emails can access admin
 const ALLOWED_EMAILS = [
     "raveendiran15@gmail.com",
-    "customer@gmail.com"
+    "rithvikraghav11@gmail.com"
 ];
 
 console.log(
