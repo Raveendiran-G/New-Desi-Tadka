@@ -35,8 +35,16 @@ const upload = multer({
 // ========================================
 // ADMIN CREDENTIALS
 // ========================================
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_USERS = [
+    {
+        username: process.env.ADMIN_USERNAME_1,
+        password: process.env.ADMIN_PASSWORD_1
+    },
+    {
+        username: process.env.ADMIN_USERNAME_2,
+        password: process.env.ADMIN_PASSWORD_2
+    }
+];
 
 // ========================================
 // MIDDLEWARE
@@ -75,16 +83,27 @@ function requireAdmin(req, res, next) {
 
 // ========================================
 // ADMIN LOGIN & LOGOUT
-// ========================================
 app.post("/api/admin/login", (req, res) => {
     const { username, password } = req.body;
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const user = ADMIN_USERS.find(
+        admin =>
+            admin.username === username &&
+            admin.password === password
+    );
+
+    if (user) {
         req.session.isAdmin = true;
-        return res.json({ success: true, message: "Login successful" });
+        return res.json({
+            success: true,
+            message: "Login successful"
+        });
     }
 
-    return res.status(401).json({ success: false, message: "Invalid username or password" });
+    return res.status(401).json({
+        success: false,
+        message: "Invalid username or password"
+    });
 });
 
 app.post("/api/admin/logout", (req, res) => {
