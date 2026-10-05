@@ -3,11 +3,34 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const multer = require("multer");
 const supabase = require("./supabase");
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+// ========================================
+// IMAGE UPLOAD
+// ========================================
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+
+    limits: {
+        fileSize: 4 * 1024 * 1024 // 4 MB
+    },
+
+    fileFilter: (req, file, cb) => {
+
+        if (file.mimetype.startsWith("image/")) {
+            cb(null, true);
+        } else {
+            cb(new Error("Only image files are allowed"));
+        }
+
+    }
+});
 
 // ========================================
 // ADMIN CREDENTIALS
@@ -78,6 +101,102 @@ app.get("/api/admin/check", (req, res) => {
 });
 
 // ========================================
+// IMAGE UPLOAD API
+// ========================================
+
+app.post(
+    "/api/upload-image",
+    requireAdmin,
+    upload.single("image"),
+    async (req, res) => {
+
+        try {
+
+            if (!req.file) {
+                return res.status(400).json({
+                    message: "No image selected"
+                });
+            }
+
+            // Create a safe unique filename
+            const originalName =
+                path
+                    .parse(req.file.originalname)
+                    .name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-|-$/g, "");
+
+            const extension =
+                path.extname(req.file.originalname)
+                    .toLowerCase();
+
+            const fileName =
+                `${Date.now()}-${originalName}${extension}`;
+
+            const filePath =
+                `menu/${fileName}`;
+
+
+            // Upload to Supabase Storage
+            const { error: uploadError } =
+                await supabase.storage
+                    .from("menu-images")
+                    .upload(
+                        filePath,
+                        req.file.buffer,
+                        {
+                            contentType: req.file.mimetype,
+                            upsert: false
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(
+                    "Supabase Storage upload error:",
+                    uploadError
+                );
+
+                return res.status(500).json({
+                    message: "Failed to upload image"
+                });
+            }
+
+
+            // Get public URL
+            const { data } =
+                supabase.storage
+                    .from("menu-images")
+                    .getPublicUrl(filePath);
+
+
+            return res.json({
+                success: true,
+                imageUrl: data.publicUrl
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Image upload error:",
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    error.message ||
+                    "Image upload failed"
+            });
+
+        }
+
+    }
+);
+
+// ========================================
 // MENU API ROUTES
 // ========================================
 app.get("/api/menu", async (req, res) => {
@@ -98,29 +217,7 @@ app.get("/api/menu", async (req, res) => {
     }
 });
 
-app.get("/api/menu", async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from("menu_items")
-            .select("*")
-            .order("name", { ascending: true });
 
-        if (error) {
-            console.error("Supabase GET error:", error);
-            return res.status(500).json({
-                message: "Failed to load menu"
-            });
-        }
-
-        res.json(data);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "Server error"
-        });
-    }
-});
 
 app.post("/api/menu", requireAdmin, async (req, res) => {
     try {

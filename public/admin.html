@@ -3,1278 +3,1205 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>New Desi Tadka — Admin</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<style>
+    <title>New Desi Tadka — Admin</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <style>
+        :root {
+            --brown: #5a2d22;
+            --orange: #e8761f;
+            --cream: #f7f3ee;
+            --border: #e5ddd5;
+            --text: #241d19;
+            --muted: #756b64;
+            --red: #c9362b;
+        }
 
-:root {
-    --brown: #5a2d22;
-    --orange: #e8761f;
-    --cream: #f7f3ee;
-    --border: #e5ddd5;
-    --text: #241d19;
-    --muted: #756b64;
-    --red: #c9362b;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        body {
+            margin: 0;
+            font-family:
+                system-ui,
+                -apple-system,
+                "Segoe UI",
+                Roboto,
+                sans-serif;
 
-body {
-    margin: 0;
-    font-family:
-        system-ui,
-        -apple-system,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
+            background: var(--cream);
+            color: var(--text);
+        }
 
-    background: var(--cream);
-    color: var(--text);
-}
-
-/* =========================
+        /* =========================
    LOGIN
 ========================= */
 
-.login-page {
+        .login-page {
 
-    min-height: 100vh;
+            min-height: 100vh;
 
-    display: flex;
+            display: flex;
 
-    align-items: center;
+            align-items: center;
 
-    justify-content: center;
+            justify-content: center;
 
-    padding: 20px;
-}
+            padding: 20px;
+        }
 
-.login-box {
+        .login-box {
 
-    width: min(420px, 100%);
+            width: min(420px, 100%);
 
-    background: white;
+            background: white;
 
-    padding: 35px;
+            padding: 35px;
 
-    border-radius: 18px;
+            border-radius: 18px;
 
-    box-shadow:
-        0 15px 50px #0002;
-}
+            box-shadow:
+                0 15px 50px #0002;
+        }
 
-.login-logo {
+        .login-logo {
 
-    text-align: center;
+            text-align: center;
 
-    margin-bottom: 25px;
-}
+            margin-bottom: 25px;
+        }
 
-.login-logo h1 {
+        .login-logo h1 {
 
-    margin: 0;
+            margin: 0;
 
-    color: var(--brown);
+            color: var(--brown);
 
-    font-size: 28px;
-}
+            font-size: 28px;
+        }
 
-.login-logo p {
+        .login-logo p {
 
-    margin-top: 6px;
+            margin-top: 6px;
 
-    color: var(--muted);
+            color: var(--muted);
 
-    font-size: 13px;
+            font-size: 13px;
 
-    letter-spacing: 2px;
-}
+            letter-spacing: 2px;
+        }
 
-.login-field {
+        .login-field {
 
-    margin-bottom: 16px;
-}
+            margin-bottom: 16px;
+        }
 
-.login-field label {
+        .login-field label {
 
-    display: block;
+            display: block;
 
-    font-size: 14px;
+            font-size: 14px;
 
-    font-weight: 700;
+            font-weight: 700;
 
-    margin-bottom: 6px;
-}
+            margin-bottom: 6px;
+        }
 
-input,
-select,
-textarea {
+        input,
+        select,
+        textarea {
 
-    width: 100%;
+            width: 100%;
 
-    border:
-        1.5px solid
-        var(--border);
+            border:
+                1.5px solid var(--border);
 
-    border-radius: 9px;
+            border-radius: 9px;
 
-    padding: 11px 12px;
+            padding: 11px 12px;
 
-    font: inherit;
+            font: inherit;
 
-    outline: none;
+            outline: none;
 
-    background: white;
-}
+            background: white;
+        }
 
-input:focus,
-select:focus,
-textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
 
-    border-color:
-        var(--orange);
-}
+            border-color:
+                var(--orange);
+        }
 
-.login-button {
+        .login-button {
 
-    width: 100%;
+            width: 100%;
 
-    border: 0;
+            border: 0;
 
-    border-radius: 9px;
+            border-radius: 9px;
 
-    padding: 12px;
+            padding: 12px;
 
-    background: var(--orange);
+            background: var(--orange);
 
-    color: white;
+            color: white;
 
-    font-weight: 700;
+            font-weight: 700;
 
-    font-size: 15px;
+            font-size: 15px;
 
-    cursor: pointer;
-}
+            cursor: pointer;
+        }
 
-.login-error {
+        .login-error {
 
-    color: var(--red);
+            color: var(--red);
 
-    font-size: 13px;
+            font-size: 13px;
 
-    margin-top: 12px;
+            margin-top: 12px;
 
-    text-align: center;
+            text-align: center;
 
-    display: none;
-}
+            display: none;
+        }
 
-/* =========================
+        /* =========================
    ADMIN DASHBOARD
 ========================= */
 
-#dashboard {
+        #dashboard {
 
-    display: none;
-}
+            display: none;
+        }
 
-header {
+        header {
 
-    position: sticky;
+            position: sticky;
 
-    top: 0;
+            top: 0;
 
-    z-index: 20;
+            z-index: 20;
 
-    background: var(--brown);
+            background: var(--brown);
 
-    color: white;
+            color: white;
 
-    padding: 14px 18px;
+            padding: 14px 18px;
 
-    display: flex;
+            display: flex;
 
-    align-items: center;
+            align-items: center;
 
-    justify-content: space-between;
+            justify-content: space-between;
 
-    gap: 14px;
+            gap: 14px;
 
-    box-shadow:
-        0 2px 10px #0002;
-}
+            box-shadow:
+                0 2px 10px #0002;
+        }
 
-.brand b {
+        .brand b {
 
-    display: block;
+            display: block;
 
-    font-size: 20px;
-}
+            font-size: 20px;
+        }
 
-.brand small {
+        .brand small {
 
-    color: #f6b94c;
+            color: #f6b94c;
 
-    letter-spacing: 2px;
-}
+            letter-spacing: 2px;
+        }
 
-.actions {
+        .actions {
 
-    display: flex;
+            display: flex;
 
-    gap: 8px;
+            gap: 8px;
 
-    flex-wrap: wrap;
-}
+            flex-wrap: wrap;
+        }
 
-button {
+        button {
 
-    border: 0;
+            border: 0;
 
-    border-radius: 9px;
+            border-radius: 9px;
 
-    padding: 10px 14px;
+            padding: 10px 14px;
 
-    font-weight: 700;
+            font-weight: 700;
 
-    cursor: pointer;
+            cursor: pointer;
 
-    font-size: 14px;
-}
+            font-size: 14px;
+        }
 
-.primary {
+        .primary {
 
-    background: var(--orange);
+            background: var(--orange);
 
-    color: white;
-}
+            color: white;
+        }
 
-.light {
+        .light {
 
-    background: white;
+            background: white;
 
-    color: var(--brown);
-}
+            color: var(--brown);
+        }
 
-.danger {
+        .danger {
 
-    background: #fee9e7;
+            background: #fee9e7;
 
-    color: var(--red);
-}
+            color: var(--red);
+        }
 
-.ghost {
+        .ghost {
 
-    background: #ffffff20;
+            background: #ffffff20;
 
-    color: white;
-}
+            color: white;
+        }
 
-.logout {
+        .logout {
 
-    background: #ffffff20;
+            background: #ffffff20;
 
-    color: white;
-}
+            color: white;
+        }
 
-main {
+        main {
 
-    max-width: 1200px;
+            max-width: 1200px;
 
-    margin: auto;
+            margin: auto;
 
-    padding:
-        20px
-        16px
-        50px;
-}
+            padding:
+                20px 16px 50px;
+        }
 
-.top {
+        .top {
 
-    display: flex;
+            display: flex;
 
-    justify-content:
-        space-between;
+            justify-content:
+                space-between;
 
-    align-items: center;
+            align-items: center;
 
-    gap: 12px;
+            gap: 12px;
 
-    margin-bottom: 14px;
-}
+            margin-bottom: 14px;
+        }
 
-.top h1 {
+        .top h1 {
 
-    margin: 0;
+            margin: 0;
 
-    font-size: 24px;
-}
+            font-size: 24px;
+        }
 
-.count {
+        .count {
 
-    color: var(--muted);
+            color: var(--muted);
 
-    font-size: 14px;
-}
+            font-size: 14px;
+        }
 
-.toolbar {
+        .toolbar {
 
-    background: white;
+            background: white;
 
-    border:
-        1px solid
-        var(--border);
+            border:
+                1px solid var(--border);
 
-    border-radius: 14px;
+            border-radius: 14px;
 
-    padding: 12px;
+            padding: 12px;
 
-    display: grid;
+            display: grid;
 
-    grid-template-columns:
-        1fr 190px auto;
+            grid-template-columns:
+                1fr 190px auto;
 
-    gap: 10px;
+            gap: 10px;
 
-    margin-bottom: 16px;
-}
+            margin-bottom: 16px;
+        }
 
-.table-wrap {
+        .table-wrap {
 
-    background: white;
+            background: white;
 
-    border:
-        1px solid
-        var(--border);
+            border:
+                1px solid var(--border);
 
-    border-radius: 14px;
+            border-radius: 14px;
 
-    overflow: auto;
-}
+            overflow: auto;
+        }
 
-.table {
+        .table {
 
-    width: 100%;
+            width: 100%;
 
-    border-collapse: collapse;
+            border-collapse: collapse;
 
-    min-width: 760px;
-}
+            min-width: 760px;
+        }
 
-.table th,
-.table td {
+        .table th,
+        .table td {
 
-    padding: 12px;
+            padding: 12px;
 
-    border-bottom:
-        1px solid
-        var(--border);
+            border-bottom:
+                1px solid var(--border);
 
-    text-align: left;
+            text-align: left;
 
-    vertical-align: middle;
-}
+            vertical-align: middle;
+        }
 
-.table th {
+        .table th {
 
-    background: #fbf8f5;
+            background: #fbf8f5;
 
-    font-size: 13px;
+            font-size: 13px;
 
-    color: var(--muted);
-}
+            color: var(--muted);
+        }
 
-.name {
+        .name {
 
-    font-weight: 700;
-}
+            font-weight: 700;
+        }
 
-.sub {
+        .sub {
 
-    font-size: 12px;
+            font-size: 12px;
 
-    color: var(--muted);
+            color: var(--muted);
 
-    margin-top: 3px;
-}
+            margin-top: 3px;
+        }
 
-.price {
+        .price {
 
-    font-weight: 800;
+            font-weight: 800;
 
-    color: var(--brown);
-}
+            color: var(--brown);
+        }
 
-.row-actions {
+        .row-actions {
 
-    display: flex;
+            display: flex;
 
-    gap: 7px;
-}
+            gap: 7px;
+        }
 
-.empty {
+        .empty {
 
-    text-align: center;
+            text-align: center;
 
-    padding: 40px;
+            padding: 40px;
 
-    color: var(--muted);
-}
+            color: var(--muted);
+        }
 
-/* =========================
+        /* =========================
    MODAL
 ========================= */
 
-.overlay {
+        .overlay {
 
-    position: fixed;
+            position: fixed;
 
-    inset: 0;
+            inset: 0;
 
-    background: #0008;
+            background: #0008;
 
-    display: none;
+            display: none;
 
-    align-items: center;
+            align-items: center;
 
-    justify-content: center;
+            justify-content: center;
 
-    padding: 16px;
+            padding: 16px;
 
-    z-index: 50;
-}
+            z-index: 50;
+        }
 
-.overlay.show {
+        .overlay.show {
 
-    display: flex;
-}
+            display: flex;
+        }
 
-.modal {
+        .modal {
 
-    background: white;
+            background: white;
 
-    width: min(620px, 100%);
+            width: min(620px, 100%);
 
-    max-height: 92vh;
+            max-height: 92vh;
 
-    overflow: auto;
+            overflow: auto;
 
-    border-radius: 16px;
+            border-radius: 16px;
 
-    padding: 20px;
+            padding: 20px;
 
-    box-shadow:
-        0 20px 60px #0005;
-}
+            box-shadow:
+                0 20px 60px #0005;
+        }
 
-.modal h2 {
+        .modal h2 {
 
-    margin:
-        0
-        0
-        16px;
-}
+            margin:
+                0 0 16px;
+        }
 
-.form-grid {
+        .form-grid {
 
-    display: grid;
+            display: grid;
 
-    grid-template-columns:
-        1fr 1fr;
+            grid-template-columns:
+                1fr 1fr;
 
-    gap: 12px;
-}
+            gap: 12px;
+        }
 
-.field.full {
+        .field.full {
 
-    grid-column: 1 / -1;
-}
+            grid-column: 1 / -1;
+        }
 
-.field label {
+        .field label {
 
-    display: block;
+            display: block;
 
-    font-size: 13px;
+            font-size: 13px;
 
-    font-weight: 700;
+            font-weight: 700;
 
-    margin-bottom: 6px;
-}
+            margin-bottom: 6px;
+        }
 
-textarea {
+        textarea {
 
-    min-height: 90px;
+            min-height: 90px;
 
-    resize: vertical;
-}
+            resize: vertical;
+        }
 
-.modal-actions {
+        .modal-actions {
 
-    display: flex;
+            display: flex;
 
-    justify-content: flex-end;
+            justify-content: flex-end;
 
-    gap: 8px;
+            gap: 8px;
 
-    margin-top: 18px;
-}
+            margin-top: 18px;
+        }
 
-.error {
+        .error {
 
-    color: var(--red);
+            color: var(--red);
 
-    font-size: 13px;
+            font-size: 13px;
 
-    margin-top: 10px;
+            margin-top: 10px;
 
-    display: none;
-}
+            display: none;
+        }
 
-.toast {
+        .toast {
 
-    position: fixed;
+            position: fixed;
 
-    right: 18px;
+            right: 18px;
 
-    bottom: 18px;
+            bottom: 18px;
 
-    background: var(--brown);
+            background: var(--brown);
 
-    color: white;
+            color: white;
 
-    padding: 12px 16px;
+            padding: 12px 16px;
 
-    border-radius: 10px;
+            border-radius: 10px;
 
-    display: none;
+            display: none;
 
-    z-index: 100;
-}
+            z-index: 100;
+        }
 
-.toast.show {
+        .toast.show {
 
-    display: block;
-}
+            display: block;
+        }
 
-@media(max-width:700px) {
+        @media(max-width:700px) {
 
-    header {
+            header {
 
-        align-items: flex-start;
+                align-items: flex-start;
 
-        flex-direction: column;
-    }
+                flex-direction: column;
+            }
 
-    .toolbar {
+            .toolbar {
 
-        grid-template-columns: 1fr;
-    }
+                grid-template-columns: 1fr;
+            }
 
-    .form-grid {
+            .form-grid {
 
-        grid-template-columns: 1fr;
-    }
+                grid-template-columns: 1fr;
+            }
 
-    .field.full {
+            .field.full {
 
-        grid-column: auto;
-    }
-}
-
-</style>
+                grid-column: auto;
+            }
+        }
+    </style>
 
 </head>
 
 <body>
 
-<!-- =========================
+    <!-- =========================
      LOGIN PAGE
 ========================= -->
 
-<div
-    class="login-page"
-    id="loginPage"
->
+    <div class="login-page" id="loginPage">
 
-    <div class="login-box">
+        <div class="login-box">
 
-        <div class="login-logo">
+            <div class="login-logo">
 
-            <h1>New Desi Tadka</h1>
+                <h1>New Desi Tadka</h1>
 
-            <p>ADMIN PANEL</p>
+                <p>ADMIN PANEL</p>
+
+            </div>
+
+            <form id="loginForm">
+
+                <div class="login-field">
+
+                    <label>
+                        Username
+                    </label>
+
+                    <input id="username" type="text" required autocomplete="username">
+
+                </div>
+
+                <div class="login-field">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input id="password" type="password" required autocomplete="current-password">
+
+                </div>
+
+                <button class="login-button" type="submit">
+                    Login
+                </button>
+
+                <div class="login-error" id="loginError">
+                    Invalid username or password
+                </div>
+
+            </form>
 
         </div>
 
-        <form id="loginForm">
-
-            <div class="login-field">
-
-                <label>
-                    Username
-                </label>
-
-                <input
-                    id="username"
-                    type="text"
-                    required
-                    autocomplete="username"
-                >
-
-            </div>
-
-            <div class="login-field">
-
-                <label>
-                    Password
-                </label>
-
-                <input
-                    id="password"
-                    type="password"
-                    required
-                    autocomplete="current-password"
-                >
-
-            </div>
-
-            <button
-                class="login-button"
-                type="submit"
-            >
-                Login
-            </button>
-
-            <div
-                class="login-error"
-                id="loginError"
-            >
-                Invalid username or password
-            </div>
-
-        </form>
-
     </div>
 
-</div>
 
-
-<!-- =========================
+    <!-- =========================
      DASHBOARD
 ========================= -->
 
-<div id="dashboard">
+    <div id="dashboard">
 
-<header>
+        <header>
 
-    <div class="brand">
+            <div class="brand">
 
-        <b>
-            New Desi Tadka — Admin
-        </b>
+                <b>
+                    New Desi Tadka — Admin
+                </b>
 
-        <small>
-            MENU MANAGEMENT
-        </small>
+                <small>
+                    MENU MANAGEMENT
+                </small>
 
-    </div>
-
-    <div class="actions">
-
-        <button
-            class="ghost"
-            onclick="window.location.href='/'"
-        >
-            View Website
-        </button>
-
-        <button
-            class="primary"
-            onclick="openAdd()"
-        >
-            + Add Item
-        </button>
-
-        <button
-            class="logout"
-            onclick="logout()"
-        >
-            Logout
-        </button>
-
-    </div>
-
-</header>
-
-
-<main>
-
-    <div class="top">
-
-        <div>
-
-            <h1>
-                Menu Items
-            </h1>
-
-            <div
-                class="count"
-                id="count"
-            >
-                Loading…
             </div>
+
+            <div class="actions">
+
+                <button class="ghost" onclick="window.location.href='/'">
+                    View Website
+                </button>
+
+                <button class="primary" onclick="openAdd()">
+                    + Add Item
+                </button>
+
+                <button class="logout" onclick="logout()">
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <main>
+
+            <div class="top">
+
+                <div>
+
+                    <h1>
+                        Menu Items
+                    </h1>
+
+                    <div class="count" id="count">
+                        Loading…
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="toolbar">
+
+                <input id="search" placeholder="Search item, category or description..." oninput="render()">
+
+                <select id="category" onchange="render()">
+
+                    <option value="">
+                        All categories
+                    </option>
+
+                </select>
+
+                <button class="light" onclick="loadMenu()">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Item
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="rows">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================
+     ADD / EDIT MODAL
+========================= -->
+
+    <div class="overlay" id="overlay">
+
+        <div class="modal">
+
+            <h2 id="modalTitle">
+                Add Menu Item
+            </h2>
+
+            <form id="itemForm">
+
+                <div class="form-grid">
+
+                    <div class="field full">
+
+                        <label>
+                            Item name *
+                        </label>
+
+                        <input id="name" required>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Category *
+                        </label>
+
+                        <input id="cat" list="catList" required>
+
+                        <datalist id="catList">
+                        </datalist>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Price (₹) *
+                        </label>
+
+                        <input id="price" type="number" min="0" step="1" required>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea id="desc" placeholder="Example: Indian Starters"></textarea>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>Image</label>
+
+                        <input type="file" id="imageFile" accept="image/*">
+
+                        <img id="imagePreview" style="
+        display:none;
+        width:150px;
+        height:100px;
+        object-fit:cover;
+        margin-top:10px;
+        border-radius:10px;
+    ">
+
+                    </div>
+
+                </div>
+
+
+                <div class="error" id="formError"></div>
+
+
+                <div class="modal-actions">
+
+                    <button type="button" class="light" onclick="closeModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary" id="saveBtn">
+                        Add Item
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
     </div>
 
 
-    <div class="toolbar">
+    <div class="toast" id="toast"></div>
 
-        <input
-            id="search"
-            placeholder="Search item, category or description..."
-            oninput="render()"
-        >
 
-        <select
-            id="category"
-            onchange="render()"
-        >
+    <script>
 
-            <option value="">
-                All categories
-            </option>
+        let menu = [];
 
-        </select>
+        let editingId = null;
 
-        <button
-            class="light"
-            onclick="loadMenu()"
-        >
-            ↻ Refresh
-        </button>
+        document.getElementById("imageFile").addEventListener("change", function () {
 
-    </div>
+            const file = this.files[0];
 
+            if (!file) return;
 
-    <div class="table-wrap">
+            const preview = document.getElementById("imagePreview");
 
-        <table class="table">
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        });
+        // =========================
+        // SHORTCUT
+        // =========================
 
-            <thead>
+        const $ = id =>
+            document.getElementById(id);
 
-                <tr>
 
-                    <th>
-                        Item
-                    </th>
+        // =========================
+        // ESCAPE HTML
+        // =========================
 
-                    <th>
-                        Category
-                    </th>
+        function esc(value) {
 
-                    <th>
-                        Price
-                    </th>
-
-                    <th>
-                        Description
-                    </th>
-
-                    <th>
-                        Actions
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="rows">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</main>
-
-</div>
-
-
-<!-- =========================
-     ADD / EDIT MODAL
-========================= -->
-
-<div
-    class="overlay"
-    id="overlay"
->
-
-    <div class="modal">
-
-        <h2 id="modalTitle">
-            Add Menu Item
-        </h2>
-
-        <form id="itemForm">
-
-            <div class="form-grid">
-
-                <div class="field full">
-
-                    <label>
-                        Item name *
-                    </label>
-
-                    <input
-                        id="name"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Category *
-                    </label>
-
-                    <input
-                        id="cat"
-                        list="catList"
-                        required
-                    >
-
-                    <datalist id="catList">
-                    </datalist>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Price (₹) *
-                    </label>
-
-                    <input
-                        id="price"
-                        type="number"
-                        min="0"
-                        step="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field full">
-
-                    <label>
-                        Description
-                    </label>
-
-                    <textarea
-                        id="desc"
-                        placeholder="Example: Indian Starters"
-                    ></textarea>
-
-                </div>
-
-
-                <div class="field full">
-
-                    <label>
-                        Image path or URL
-                    </label>
-
-                    <input
-                        id="image"
-                        placeholder="Example: aloo-golden-fry.jpg"
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="error"
-                id="formError"
-            ></div>
-
-
-            <div class="modal-actions">
-
-                <button
-                    type="button"
-                    class="light"
-                    onclick="closeModal()"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    class="primary"
-                    id="saveBtn"
-                >
-                    Add Item
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<div
-    class="toast"
-    id="toast"
-></div>
-
-
-<script>
-
-let menu = [];
-
-let editingId = null;
-
-
-// =========================
-// SHORTCUT
-// =========================
-
-const $ = id =>
-    document.getElementById(id);
-
-
-// =========================
-// ESCAPE HTML
-// =========================
-
-function esc(value) {
-
-    return String(value ?? "")
-        .replace(
-            /[&<>'"]/g,
-            character => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                "'": "&#39;",
-                '"': "&quot;"
-            }[character])
-        );
-}
-
-
-// =========================
-// MONEY
-// =========================
-
-function money(value) {
-
-    return "₹" +
-        Number(value || 0)
-            .toLocaleString("en-IN");
-}
-
-
-// =========================
-// CHECK LOGIN
-// =========================
-
-async function checkLogin() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/admin/check"
-            );
-
-        const data =
-            await response.json();
-
-        if (data.loggedIn) {
-
-            showDashboard();
-
+            return String(value ?? "")
+                .replace(
+                    /[&<>'"]/g,
+                    character => ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        "'": "&#39;",
+                        '"': "&quot;"
+                    }[character])
+                );
         }
 
-    } catch (error) {
 
-        console.error(error);
+        // =========================
+        // MONEY
+        // =========================
 
-    }
-}
+        function money(value) {
+
+            return "₹" +
+                Number(value || 0)
+                    .toLocaleString("en-IN");
+        }
 
 
-// =========================
-// LOGIN
-// =========================
+        // =========================
+        // CHECK LOGIN
+        // =========================
 
-$("loginForm")
-    .addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-            const username =
-                $("username").value.trim();
-
-            const password =
-                $("password").value;
+        async function checkLogin() {
 
             try {
 
                 const response =
                     await fetch(
-                        "/api/admin/login",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                username,
-                                password
-                            })
-                        }
+                        "/api/admin/check"
                     );
 
                 const data =
                     await response.json();
 
-                if (!response.ok) {
+                if (data.loggedIn) {
 
-                    $("loginError")
-                        .style.display = "block";
+                    showDashboard();
 
-                    $("loginError")
-                        .textContent =
-                        data.message ||
-                        "Login failed";
-
-                    return;
                 }
-
-                $("loginError")
-                    .style.display = "none";
-
-                showDashboard();
 
             } catch (error) {
 
-                $("loginError")
-                    .style.display = "block";
+                console.error(error);
 
-                $("loginError")
-                    .textContent =
-                    "Could not connect to server.";
+            }
+        }
+
+
+        // =========================
+        // LOGIN
+        // =========================
+
+        $("loginForm")
+            .addEventListener(
+                "submit",
+                async event => {
+
+                    event.preventDefault();
+
+                    const username =
+                        $("username").value.trim();
+
+                    const password =
+                        $("password").value;
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                "/api/admin/login",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body: JSON.stringify({
+                                        username,
+                                        password
+                                    })
+                                }
+                            );
+
+                        const data =
+                            await response.json();
+
+                        if (!response.ok) {
+
+                            $("loginError")
+                                .style.display = "block";
+
+                            $("loginError")
+                                .textContent =
+                                data.message ||
+                                "Login failed";
+
+                            return;
+                        }
+
+                        $("loginError")
+                            .style.display = "none";
+
+                        showDashboard();
+
+                    } catch (error) {
+
+                        $("loginError")
+                            .style.display = "block";
+
+                        $("loginError")
+                            .textContent =
+                            "Could not connect to server.";
+
+                    }
+
+                }
+            );
+
+
+        // =========================
+        // SHOW DASHBOARD
+        // =========================
+
+        function showDashboard() {
+
+            $("loginPage")
+                .style.display = "none";
+
+            $("dashboard")
+                .style.display = "block";
+
+            loadMenu();
+        }
+
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        async function logout() {
+
+            await fetch(
+                "/api/admin/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+            location.reload();
+        }
+
+
+        // =========================
+        // LOAD MENU
+        // =========================
+
+        async function loadMenu() {
+
+            try {
+
+                const response =
+                    await fetch("/api/menu");
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Could not load menu"
+                    );
+
+                }
+
+                menu =
+                    await response.json();
+
+                fillCategories();
+
+                render();
+
+            } catch (error) {
+
+                showToast(
+                    "Could not load menu"
+                );
+
+                console.error(error);
 
             }
 
         }
-    );
 
 
-// =========================
-// SHOW DASHBOARD
-// =========================
+        // =========================
+        // CATEGORY LIST
+        // =========================
 
-function showDashboard() {
+        function fillCategories() {
 
-    $("loginPage")
-        .style.display = "none";
-
-    $("dashboard")
-        .style.display = "block";
-
-    loadMenu();
-}
-
-
-// =========================
-// LOGOUT
-// =========================
-
-async function logout() {
-
-    await fetch(
-        "/api/admin/logout",
-        {
-            method: "POST"
-        }
-    );
-
-    location.reload();
-}
-
-
-// =========================
-// LOAD MENU
-// =========================
-
-async function loadMenu() {
-
-    try {
-
-        const response =
-            await fetch("/api/menu");
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load menu"
+            const categories = [
+                ...new Set(
+                    menu
+                        .map(item => item.category)
+                        .filter(Boolean)
+                )
+            ].sort(
+                (a, b) =>
+                    a.localeCompare(b)
             );
 
-        }
+            const selected =
+                $("category").value;
 
-        menu =
-            await response.json();
-
-        fillCategories();
-
-        render();
-
-    } catch (error) {
-
-        showToast(
-            "Could not load menu"
-        );
-
-        console.error(error);
-
-    }
-
-}
-
-
-// =========================
-// CATEGORY LIST
-// =========================
-
-function fillCategories() {
-
-    const categories = [
-        ...new Set(
-            menu
-                .map(item => item.category)
-                .filter(Boolean)
-        )
-    ].sort(
-        (a, b) =>
-            a.localeCompare(b)
-    );
-
-    const selected =
-        $("category").value;
-
-    $("category").innerHTML =
-        `<option value="">
+            $("category").innerHTML =
+                `<option value="">
             All categories
         </option>` +
 
-        categories
-            .map(
-                category =>
-                    `<option value="${esc(category)}">
+                categories
+                    .map(
+                        category =>
+                            `<option value="${esc(category)}">
                         ${esc(category)}
                     </option>`
-            )
-            .join("");
+                    )
+                    .join("");
 
-    $("category").value =
-        selected;
-
-
-    $("catList").innerHTML =
-        categories
-            .map(
-                category =>
-                    `<option value="${esc(category)}">`
-            )
-            .join("");
-}
+            $("category").value =
+                selected;
 
 
-// =========================
-// RENDER
-// =========================
-
-function render() {
-
-    const search =
-        $("search")
-            .value
-            .trim()
-            .toLowerCase();
-
-    const category =
-        $("category").value;
+            $("catList").innerHTML =
+                categories
+                    .map(
+                        category =>
+                            `<option value="${esc(category)}">`
+                    )
+                    .join("");
+        }
 
 
-    const filtered =
-        menu.filter(item => {
+        // =========================
+        // RENDER
+        // =========================
 
-            const matchesCategory =
-                !category ||
-                item.category === category;
+        function render() {
 
-            const matchesSearch =
-                !search ||
-                [
-                    item.name,
-                    item.category,
-                    item.description
-                ]
-                    .some(
-                        value =>
-                            String(value || "")
-                                .toLowerCase()
-                                .includes(search)
+            const search =
+                $("search")
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+            const category =
+                $("category").value;
+
+
+            const filtered =
+                menu.filter(item => {
+
+                    const matchesCategory =
+                        !category ||
+                        item.category === category;
+
+                    const matchesSearch =
+                        !search ||
+                        [
+                            item.name,
+                            item.category,
+                            item.description
+                        ]
+                            .some(
+                                value =>
+                                    String(value || "")
+                                        .toLowerCase()
+                                        .includes(search)
+                            );
+
+                    return (
+                        matchesCategory &&
+                        matchesSearch
                     );
-
-            return (
-                matchesCategory &&
-                matchesSearch
-            );
-        });
+                });
 
 
-    $("count").textContent =
-        `Showing ${filtered.length} of ${menu.length} items`;
+            $("count").textContent =
+                `Showing ${filtered.length} of ${menu.length} items`;
 
 
-    $("rows").innerHTML =
-        filtered.length
+            $("rows").innerHTML =
+                filtered.length
 
-        ?
+                    ?
 
-        filtered
-            .map(
-                item => `
+                    filtered
+                        .map(
+                            item => `
                     <tr>
 
                         <td>
@@ -1328,12 +1255,12 @@ function render() {
 
                     </tr>
                 `
-            )
-            .join("")
+                        )
+                        .join("")
 
-        :
+                    :
 
-        `
+                    `
             <tr>
 
                 <td colspan="5">
@@ -1346,220 +1273,391 @@ function render() {
 
             </tr>
         `;
-}
-
-
-// =========================
-// ADD
-// =========================
-
-function openAdd() {
-
-    editingId = null;
-
-    $("modalTitle")
-        .textContent =
-        "Add Menu Item";
-
-    $("saveBtn")
-        .textContent =
-        "Add Item";
-
-    $("itemForm").reset();
-
-    $("formError")
-        .style.display =
-        "none";
-
-    $("overlay")
-        .classList
-        .add("show");
-
-    $("name").focus();
-}
-
-
-// =========================
-// EDIT
-// =========================
-
-function openEdit(id) {
-
-    const item =
-        menu.find(
-            product =>
-                String(product.id) ===
-                String(id)
-        );
-
-    if (!item) return;
-
-    editingId = id;
-
-    $("modalTitle")
-        .textContent =
-        "Edit Menu Item";
-
-    $("saveBtn")
-        .textContent =
-        "Save Changes";
-
-    $("name").value =
-        item.name || "";
-
-    $("cat").value =
-        item.category || "";
-
-    $("price").value =
-        item.price ?? "";
-
-    $("desc").value =
-        item.description || "";
-
-    $("image").value =
-        item.image || "";
-
-    $("formError")
-        .style.display =
-        "none";
-
-    $("overlay")
-        .classList
-        .add("show");
-
-    $("name").focus();
-}
-
-
-// =========================
-// CLOSE MODAL
-// =========================
-
-function closeModal() {
-
-    $("overlay")
-        .classList
-        .remove("show");
-}
-
-
-// =========================
-// CLOSE WHEN CLICKING OUTSIDE
-// =========================
-
-$("overlay")
-    .addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target.id ===
-                "overlay"
-            ) {
-
-                closeModal();
-
-            }
-
         }
-    );
 
 
-// =========================
-// ADD / EDIT SUBMIT
-// =========================
+        // =========================
+        // ADD
+        // =========================
+        function openAdd() {
 
-$("itemForm")
-    .addEventListener(
-        "submit",
-        async event => {
+            editingId = null;
 
-            event.preventDefault();
+            $("modalTitle").textContent = "Add Menu Item";
 
+            $("saveBtn").textContent = "Add Item";
 
-            const payload = {
+            $("itemForm").reset();
 
-                name:
-                    $("name")
-                        .value
-                        .trim(),
+            // Clear image preview
+            $("imagePreview").src = "";
+            $("imagePreview").style.display = "none";
 
-                category:
-                    $("cat")
-                        .value
-                        .trim(),
+            $("formError").style.display = "none";
 
-                price:
-                    Number(
-                        $("price").value
-                    ),
+            $("overlay").classList.add("show");
 
-                description:
-                    $("desc")
-                        .value
-                        .trim(),
-
-                image:
-                    $("image")
-                        .value
-                        .trim() ||
-                    null
-
-            };
+            $("name").focus();
+        }
 
 
-            if (
-                !payload.name ||
-                !payload.category ||
-                Number.isNaN(payload.price)
-            ) {
+        // =========================
+        // EDIT
+        // =========================
+        function openEdit(id) {
 
-                showError(
-                    "Name, category and valid price are required."
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
                 );
 
-                return;
-            }
+            if (!item) return;
 
+            editingId = id;
+
+            $("modalTitle")
+                .textContent =
+                "Edit Menu Item";
 
             $("saveBtn")
-                .disabled = true;
+                .textContent =
+                "Save Changes";
+
+            $("name").value =
+                item.name || "";
+
+            $("cat").value =
+                item.category || "";
+
+            $("price").value =
+                item.price ?? "";
+
+            $("desc").value =
+                item.description || "";
+
+            // Reset file selector
+            $("imageFile").value = "";
+
+            // Show existing image
+            if (item.image) {
+
+                $("imagePreview").src =
+                    item.image;
+
+                $("imagePreview").style.display =
+                    "block";
+
+            } else {
+
+                $("imagePreview").src = "";
+
+                $("imagePreview").style.display =
+                    "none";
+            }
+
+            $("formError")
+                .style.display =
+                "none";
+
+            $("overlay")
+                .classList
+                .add("show");
+
+            $("name").focus();
+        }
+
+        // =========================
+        // CLOSE MODAL
+        // =========================
+
+        function closeModal() {
+
+            $("overlay")
+                .classList
+                .remove("show");
+        }
+
+
+        // =========================
+        // CLOSE WHEN CLICKING OUTSIDE
+        // =========================
+
+        $("overlay")
+            .addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target.id ===
+                        "overlay"
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+
+        // =========================
+        // ADD / EDIT SUBMIT
+        // =========================
+
+        $("itemForm")
+            .addEventListener(
+                "submit",
+                async event => {
+
+                    event.preventDefault();
+
+                    const file =
+                        $("imageFile").files[0];
+
+
+                    const name =
+                        $("name").value.trim();
+
+                    const category =
+                        $("cat").value.trim();
+
+                    const price =
+                        Number($("price").value);
+
+                    const description =
+                        $("desc").value.trim();
+
+
+                    if (
+                        !name ||
+                        !category ||
+                        Number.isNaN(price)
+                    ) {
+
+                        showError(
+                            "Name, category and valid price are required."
+                        );
+
+                        return;
+                    }
+
+
+                    $("saveBtn").disabled = true;
+
+                    $("saveBtn").textContent =
+                        "Saving...";
+
+
+                    try {
+
+                        let imageUrl = null;
+
+
+                        // ========================================
+                        // UPLOAD IMAGE IF ONE WAS SELECTED
+                        // ========================================
+
+                        if (file) {
+
+                            $("saveBtn").textContent =
+                                "Uploading image...";
+
+
+                            const formData =
+                                new FormData();
+
+                            formData.append(
+                                "image",
+                                file
+                            );
+
+
+                            const uploadResponse =
+                                await fetch(
+                                    "/api/upload-image",
+                                    {
+                                        method: "POST",
+                                        body: formData
+                                    }
+                                );
+
+
+                            const uploadData =
+                                await uploadResponse.json();
+
+
+                            if (!uploadResponse.ok) {
+
+                                throw new Error(
+                                    uploadData.message ||
+                                    "Image upload failed"
+                                );
+
+                            }
+
+
+                            imageUrl =
+                                uploadData.imageUrl;
+                        }
+
+
+                        // ========================================
+                        // KEEP OLD IMAGE WHEN EDITING
+                        // ========================================
+
+                        if (
+                            editingId &&
+                            !file
+                        ) {
+
+                            const existingItem =
+                                menu.find(
+                                    item =>
+                                        String(item.id) ===
+                                        String(editingId)
+                                );
+
+                            imageUrl =
+                                existingItem?.image ||
+                                null;
+                        }
+
+
+                        // ========================================
+                        // MENU PAYLOAD
+                        // ========================================
+
+                        const payload = {
+
+                            name: name,
+
+                            category: category,
+
+                            price: price,
+
+                            description: description,
+
+                            image: imageUrl
+
+                        };
+
+
+                        // ========================================
+                        // ADD OR EDIT
+                        // ========================================
+
+                        const url =
+                            editingId
+                                ? `/api/menu/${encodeURIComponent(editingId)}`
+                                : "/api/menu";
+
+
+                        const response =
+                            await fetch(
+                                url,
+                                {
+                                    method:
+                                        editingId
+                                            ? "PUT"
+                                            : "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify(
+                                            payload
+                                        )
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                data.message ||
+                                "Request failed"
+                            );
+
+                        }
+
+
+                        closeModal();
+
+                        await loadMenu();
+
+
+                        showToast(
+                            editingId
+                                ? "Item updated successfully"
+                                : "Item added successfully"
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        showError(
+                            error.message
+                        );
+
+
+                    } finally {
+
+                        $("saveBtn").disabled =
+                            false;
+
+                        $("saveBtn").textContent =
+                            editingId
+                                ? "Save Changes"
+                                : "Add Item";
+
+                    }
+
+                }
+            );
+
+        // =========================
+        // DELETE
+        // =========================
+
+        async function removeItem(id) {
+
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
+                );
+
+            if (!item) return;
+
+
+            const confirmed =
+                confirm(
+                    `Delete "${item.name}"?\n\nThis cannot be undone.`
+                );
+
+
+            if (!confirmed) return;
 
 
             try {
 
-                const url =
-                    editingId
-
-                    ?
-
-                    `/api/menu/${encodeURIComponent(
-                        editingId
-                    )}`
-
-                    :
-
-                    "/api/menu";
-
-
                 const response =
                     await fetch(
-                        url,
+                        `/api/menu/${encodeURIComponent(id)}`,
                         {
-                            method:
-                                editingId
-                                    ? "PUT"
-                                    : "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    payload
-                                )
+                            method: "DELETE"
                         }
                     );
 
@@ -1572,166 +1670,81 @@ $("itemForm")
 
                     throw new Error(
                         data.message ||
-                        "Request failed"
+                        "Delete failed"
                     );
 
                 }
 
 
-                closeModal();
-
                 await loadMenu();
 
-
                 showToast(
-                    editingId
-
-                        ?
-
-                        "Item updated successfully"
-
-                        :
-
-                        "Item added successfully"
+                    "Item deleted successfully"
                 );
 
 
             } catch (error) {
 
-                showError(
+                showToast(
                     error.message
                 );
-
-            } finally {
-
-                $("saveBtn")
-                    .disabled = false;
 
             }
 
         }
-    );
 
 
-// =========================
-// DELETE
-// =========================
+        // =========================
+        // ERROR
+        // =========================
 
-async function removeItem(id) {
+        function showError(message) {
 
-    const item =
-        menu.find(
-            product =>
-                String(product.id) ===
-                String(id)
-        );
+            $("formError")
+                .textContent =
+                message;
 
-    if (!item) return;
-
-
-    const confirmed =
-        confirm(
-            `Delete "${item.name}"?\n\nThis cannot be undone.`
-        );
-
-
-    if (!confirmed) return;
-
-
-    try {
-
-        const response =
-            await fetch(
-                `/api/menu/${encodeURIComponent(id)}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Delete failed"
-            );
-
+            $("formError")
+                .style.display =
+                "block";
         }
 
 
-        await loadMenu();
+        // =========================
+        // TOAST
+        // =========================
 
-        showToast(
-            "Item deleted successfully"
-        );
+        function showToast(message) {
 
-
-    } catch (error) {
-
-        showToast(
-            error.message
-        );
-
-    }
-
-}
-
-
-// =========================
-// ERROR
-// =========================
-
-function showError(message) {
-
-    $("formError")
-        .textContent =
-        message;
-
-    $("formError")
-        .style.display =
-        "block";
-}
-
-
-// =========================
-// TOAST
-// =========================
-
-function showToast(message) {
-
-    $("toast")
-        .textContent =
-        message;
-
-    $("toast")
-        .classList
-        .add("show");
-
-
-    setTimeout(
-        () => {
+            $("toast")
+                .textContent =
+                message;
 
             $("toast")
                 .classList
-                .remove("show");
-
-        },
-        2200
-    );
-}
+                .add("show");
 
 
-// =========================
-// START
-// =========================
+            setTimeout(
+                () => {
 
-checkLogin();
+                    $("toast")
+                        .classList
+                        .remove("show");
 
-</script>
+                },
+                2200
+            );
+        }
+
+
+        // =========================
+        // START
+        // =========================
+
+        checkLogin();
+
+    </script>
 
 </body>
 
