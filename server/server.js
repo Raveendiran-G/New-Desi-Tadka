@@ -83,29 +83,41 @@ function requireAdmin(req, res, next) {
 
 // ========================================
 // ADMIN LOGIN & LOGOUT
+// ========================================
+// ADMIN LOGIN
+// ========================================
+
 app.post("/api/admin/login", (req, res) => {
+
     const { username, password } = req.body;
+
+    console.log("Login attempt:", username);
 
     const user = ADMIN_USERS.find(
         admin =>
-            admin.username === username &&
-            admin.password === password
+            admin.username === String(username).trim() &&
+            admin.password === String(password)
     );
 
-    if (user) {
-        req.session.isAdmin = true;
-        return res.json({
-            success: true,
-            message: "Login successful"
+    if (!user) {
+        console.log("Login failed for:", username);
+
+        return res.status(401).json({
+            success: false,
+            message: "Invalid username or password"
         });
     }
 
-    return res.status(401).json({
-        success: false,
-        message: "Invalid username or password"
+    req.session.isAdmin = true;
+    req.session.username = user.username;
+
+    console.log("Login successful:", username);
+
+    return res.json({
+        success: true,
+        message: "Login successful"
     });
 });
-
 app.post("/api/admin/logout", (req, res) => {
     req.session.destroy(error => {
         if (error) {
