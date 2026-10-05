@@ -555,7 +555,13 @@
             return `
                 <div class="card" data-product="${escapeHtml(key)}">
                     <div class="im">
-                        ${pic(subcategory.n, item.n, subcategory.e)}
+                       ${item.image
+                    ? `<img src="${escapeHtml(item.image)}"
+                    alt="${escapeHtml(item.n)}"
+                    loading="lazy"
+                    onerror="this.style.display='none'">`
+                    : pic(subcategory.n, item.n, subcategory.e)
+                }
                         ${video ? `
                             <video class="product-hover-video"
                                    muted
@@ -761,7 +767,7 @@
                 openCat(index);
             };
         });
-        
+
 
         // =====================================================
         // PRODUCT VIDEO HOVER
