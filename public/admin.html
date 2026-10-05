@@ -869,389 +869,389 @@
     <div class="toast" id="toast"></div>
 
 
-   <script>
+    <script>
 
-    let menu = [];
-    let editingId = null;
-
-
-    // =========================
-    // SHORTCUT
-    // =========================
-
-    const $ = id => document.getElementById(id);
+        let menu = [];
+        let editingId = null;
 
 
-    // =========================
-    // IMAGE FILE PREVIEW
-    // =========================
+        // =========================
+        // SHORTCUT
+        // =========================
 
-    $("imageFile").addEventListener("change", function () {
-
-        const file = this.files[0];
-
-        if (!file) return;
-
-        // If user selects a file,
-        // clear the URL field
-        $("imageUrl").value = "";
-
-        const preview = $("imagePreview");
-
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
-
-    });
+        const $ = id => document.getElementById(id);
 
 
-    // =========================
-    // IMAGE URL PREVIEW
-    // =========================
+        // =========================
+        // IMAGE FILE PREVIEW
+        // =========================
 
-    $("imageUrl").addEventListener("input", function () {
+        $("imageFile").addEventListener("change", function () {
 
-        const url = this.value.trim();
-        const preview = $("imagePreview");
+            const file = this.files[0];
 
-        // If URL is empty
-        if (!url) {
+            if (!file) return;
 
-            preview.src = "";
-            preview.style.display = "none";
+            // If user selects a file,
+            // clear the URL field
+            $("imageUrl").value = "";
 
-            return;
+            const preview = $("imagePreview");
+
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+
+        });
+
+
+        // =========================
+        // IMAGE URL PREVIEW
+        // =========================
+
+        $("imageUrl").addEventListener("input", function () {
+
+            const url = this.value.trim();
+            const preview = $("imagePreview");
+
+            // If URL is empty
+            if (!url) {
+
+                preview.src = "";
+                preview.style.display = "none";
+
+                return;
+            }
+
+            // Show URL preview
+            preview.src = url;
+            preview.style.display = "block";
+
+            // Invalid image URL
+            preview.onerror = function () {
+
+                preview.style.display = "none";
+
+            };
+
+        });
+
+
+        // =========================
+        // ESCAPE HTML
+        // =========================
+
+        function esc(value) {
+
+            return String(value ?? "")
+                .replace(
+                    /[&<>'"]/g,
+                    character => ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        "'": "&#39;",
+                        '"': "&quot;"
+                    }[character])
+                );
+
         }
 
-        // Show URL preview
-        preview.src = url;
-        preview.style.display = "block";
 
-        // Invalid image URL
-        preview.onerror = function () {
+        // =========================
+        // MONEY
+        // =========================
 
-            preview.style.display = "none";
+        function money(value) {
 
-        };
+            return "₹" +
+                Number(value || 0)
+                    .toLocaleString("en-IN");
 
-    });
-
-
-    // =========================
-    // ESCAPE HTML
-    // =========================
-
-    function esc(value) {
-
-        return String(value ?? "")
-            .replace(
-                /[&<>'"]/g,
-                character => ({
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    "'": "&#39;",
-                    '"': "&quot;"
-                }[character])
-            );
-
-    }
+        }
 
 
-    // =========================
-    // MONEY
-    // =========================
+        // =========================
+        // CHECK LOGIN
+        // =========================
 
-    function money(value) {
+        async function checkLogin() {
 
-        return "₹" +
-            Number(value || 0)
-                .toLocaleString("en-IN");
+            try {
 
-    }
+                const response =
+                    await fetch("/api/admin/check");
 
+                const data =
+                    await response.json();
 
-    // =========================
-    // CHECK LOGIN
-    // =========================
+                if (data.loggedIn) {
 
-    async function checkLogin() {
+                    showDashboard();
 
-        try {
+                }
 
-            const response =
-                await fetch("/api/admin/check");
+            } catch (error) {
 
-            const data =
-                await response.json();
-
-            if (data.loggedIn) {
-
-                showDashboard();
+                console.error(error);
 
             }
 
-        } catch (error) {
-
-            console.error(error);
-
         }
 
-    }
 
+        // =========================
+        // LOGIN
+        // =========================
 
-    // =========================
-    // LOGIN
-    // =========================
+        $("loginForm")
+            .addEventListener(
+                "submit",
+                async event => {
 
-    $("loginForm")
-        .addEventListener(
-            "submit",
-            async event => {
+                    event.preventDefault();
 
-                event.preventDefault();
+                    const username =
+                        $("username").value.trim();
 
-                const username =
-                    $("username").value.trim();
+                    const password =
+                        $("password").value;
 
-                const password =
-                    $("password").value;
+                    try {
 
-                try {
+                        const response =
+                            await fetch(
+                                "/api/admin/login",
+                                {
+                                    method: "POST",
 
-                    const response =
-                        await fetch(
-                            "/api/admin/login",
-                            {
-                                method: "POST",
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
 
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
+                                    body: JSON.stringify({
+                                        username,
+                                        password
+                                    })
+                                }
+                            );
 
-                                body: JSON.stringify({
-                                    username,
-                                    password
-                                })
-                            }
-                        );
+                        const data =
+                            await response.json();
 
-                    const data =
-                        await response.json();
+                        if (!response.ok) {
 
-                    if (!response.ok) {
+                            $("loginError")
+                                .style.display = "block";
+
+                            $("loginError")
+                                .textContent =
+                                data.message ||
+                                "Login failed";
+
+                            return;
+                        }
+
+                        $("loginError")
+                            .style.display = "none";
+
+                        showDashboard();
+
+                    } catch (error) {
 
                         $("loginError")
                             .style.display = "block";
 
                         $("loginError")
                             .textContent =
-                            data.message ||
-                            "Login failed";
+                            "Could not connect to server.";
 
-                        return;
                     }
 
-                    $("loginError")
-                        .style.display = "none";
-
-                    showDashboard();
-
-                } catch (error) {
-
-                    $("loginError")
-                        .style.display = "block";
-
-                    $("loginError")
-                        .textContent =
-                        "Could not connect to server.";
-
                 }
-
-            }
-        );
-
-
-    // =========================
-    // SHOW DASHBOARD
-    // =========================
-
-    function showDashboard() {
-
-        $("loginPage")
-            .style.display = "none";
-
-        $("dashboard")
-            .style.display = "block";
-
-        loadMenu();
-
-    }
-
-
-    // =========================
-    // LOGOUT
-    // =========================
-
-    async function logout() {
-
-        await fetch(
-            "/api/admin/logout",
-            {
-                method: "POST"
-            }
-        );
-
-        location.reload();
-
-    }
-
-
-    // =========================
-    // LOAD MENU
-    // =========================
-
-    async function loadMenu() {
-
-        try {
-
-            const response =
-                await fetch("/api/menu");
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Could not load menu"
-                );
-
-            }
-
-            menu =
-                await response.json();
-
-            fillCategories();
-
-            render();
-
-        } catch (error) {
-
-            showToast(
-                "Could not load menu"
             );
 
-            console.error(error);
+
+        // =========================
+        // SHOW DASHBOARD
+        // =========================
+
+        function showDashboard() {
+
+            $("loginPage")
+                .style.display = "none";
+
+            $("dashboard")
+                .style.display = "block";
+
+            loadMenu();
 
         }
 
-    }
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        async function logout() {
+
+            await fetch(
+                "/api/admin/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+            location.reload();
+
+        }
 
 
-    // =========================
-    // CATEGORY LIST
-    // =========================
+        // =========================
+        // LOAD MENU
+        // =========================
 
-    function fillCategories() {
+        async function loadMenu() {
 
-        const categories = [
-            ...new Set(
-                menu
-                    .map(item => item.category)
-                    .filter(Boolean)
-            )
-        ].sort(
-            (a, b) =>
-                a.localeCompare(b)
-        );
+            try {
 
-        const selected =
-            $("category").value;
+                const response =
+                    await fetch("/api/menu");
 
-        $("category").innerHTML =
-            `<option value="">
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Could not load menu"
+                    );
+
+                }
+
+                menu =
+                    await response.json();
+
+                fillCategories();
+
+                render();
+
+            } catch (error) {
+
+                showToast(
+                    "Could not load menu"
+                );
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        // =========================
+        // CATEGORY LIST
+        // =========================
+
+        function fillCategories() {
+
+            const categories = [
+                ...new Set(
+                    menu
+                        .map(item => item.category)
+                        .filter(Boolean)
+                )
+            ].sort(
+                (a, b) =>
+                    a.localeCompare(b)
+            );
+
+            const selected =
+                $("category").value;
+
+            $("category").innerHTML =
+                `<option value="">
                 All categories
             </option>` +
 
-            categories
-                .map(
-                    category =>
-                        `<option value="${esc(category)}">
+                categories
+                    .map(
+                        category =>
+                            `<option value="${esc(category)}">
                             ${esc(category)}
                         </option>`
-                )
-                .join("");
+                    )
+                    .join("");
 
-        $("category").value =
-            selected;
-
-
-        $("catList").innerHTML =
-            categories
-                .map(
-                    category =>
-                        `<option value="${esc(category)}">`
-                )
-                .join("");
-
-    }
+            $("category").value =
+                selected;
 
 
-    // =========================
-    // RENDER
-    // =========================
-
-    function render() {
-
-        const search =
-            $("search")
-                .value
-                .trim()
-                .toLowerCase();
-
-        const category =
-            $("category").value;
-
-
-        const filtered =
-            menu.filter(item => {
-
-                const matchesCategory =
-                    !category ||
-                    item.category === category;
-
-                const matchesSearch =
-                    !search ||
-                    [
-                        item.name,
-                        item.category,
-                        item.description
-                    ]
-                        .some(
-                            value =>
-                                String(value || "")
-                                    .toLowerCase()
-                                    .includes(search)
-                        );
-
-                return (
-                    matchesCategory &&
-                    matchesSearch
-                );
-
-            });
-
-
-        $("count").textContent =
-            `Showing ${filtered.length} of ${menu.length} items`;
-
-
-        $("rows").innerHTML =
-            filtered.length
-
-                ?
-
-                filtered
+            $("catList").innerHTML =
+                categories
                     .map(
-                        item => `
+                        category =>
+                            `<option value="${esc(category)}">`
+                    )
+                    .join("");
+
+        }
+
+
+        // =========================
+        // RENDER
+        // =========================
+
+        function render() {
+
+            const search =
+                $("search")
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+            const category =
+                $("category").value;
+
+
+            const filtered =
+                menu.filter(item => {
+
+                    const matchesCategory =
+                        !category ||
+                        item.category === category;
+
+                    const matchesSearch =
+                        !search ||
+                        [
+                            item.name,
+                            item.category,
+                            item.description
+                        ]
+                            .some(
+                                value =>
+                                    String(value || "")
+                                        .toLowerCase()
+                                        .includes(search)
+                            );
+
+                    return (
+                        matchesCategory &&
+                        matchesSearch
+                    );
+
+                });
+
+
+            $("count").textContent =
+                `Showing ${filtered.length} of ${menu.length} items`;
+
+
+            $("rows").innerHTML =
+                filtered.length
+
+                    ?
+
+                    filtered
+                        .map(
+                            item => `
                     <tr>
 
                         <td>
@@ -1305,12 +1305,12 @@
 
                     </tr>
                 `
-                    )
-                    .join("")
+                        )
+                        .join("")
 
-                :
+                    :
 
-                `
+                    `
                     <tr>
 
                         <td colspan="5">
@@ -1324,541 +1324,415 @@
                     </tr>
                 `;
 
-    }
+        }
 
 
-    // =========================
-    // ADD
-    // =========================
+        // =========================
+        // ADD
+        // =========================
 
-    function openAdd() {
+        function openAdd() {
 
-        editingId = null;
+            editingId = null;
 
-        $("modalTitle").textContent =
-            "Add Menu Item";
+            $("modalTitle").textContent =
+                "Add Menu Item";
 
-        $("saveBtn").textContent =
-            "Add Item";
+            $("saveBtn").textContent =
+                "Add Item";
 
-        $("itemForm").reset();
-
-
-        // Clear image preview
-        $("imagePreview").src = "";
-        $("imagePreview").style.display = "none";
+            $("itemForm").reset();
 
 
-        // Clear image URL
-        $("imageUrl").value = "";
-
-
-        $("formError").style.display =
-            "none";
-
-        $("overlay")
-            .classList
-            .add("show");
-
-        $("name").focus();
-
-    }
-
-
-    // =========================
-    // EDIT
-    // =========================
-
-    function openEdit(id) {
-
-        const item =
-            menu.find(
-                product =>
-                    String(product.id) ===
-                    String(id)
-            );
-
-        if (!item) return;
-
-
-        editingId = id;
-
-
-        $("modalTitle")
-            .textContent =
-            "Edit Menu Item";
-
-
-        $("saveBtn")
-            .textContent =
-            "Save Changes";
-
-
-        $("name").value =
-            item.name || "";
-
-        $("cat").value =
-            item.category || "";
-
-        $("price").value =
-            item.price ?? "";
-
-        $("desc").value =
-            item.description || "";
-
-
-        // Reset file selector
-        $("imageFile").value = "";
-
-
-        // Put existing URL into URL field
-        $("imageUrl").value =
-            item.image || "";
-
-
-        // Show existing image
-        if (item.image) {
-
-            $("imagePreview").src =
-                item.image;
-
-            $("imagePreview").style.display =
-                "block";
-
-        } else {
-
+            // Clear image preview
             $("imagePreview").src = "";
+            $("imagePreview").style.display = "none";
 
-            $("imagePreview").style.display =
+
+            // Clear image URL
+            $("imageUrl").value = "";
+
+
+            $("formError").style.display =
                 "none";
 
+            $("overlay")
+                .classList
+                .add("show");
+
+            $("name").focus();
+
         }
 
 
-        $("formError")
-            .style.display =
-            "none";
+        // =========================
+        // EDIT
+        // =========================
+
+        function openEdit(id) {
+
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
+                );
+
+            if (!item) return;
 
 
-        $("overlay")
-            .classList
-            .add("show");
+            editingId = id;
 
 
-        $("name").focus();
-
-    }
-
-
-    // =========================
-    // CLOSE MODAL
-    // =========================
-
-    function closeModal() {
-
-        $("overlay")
-            .classList
-            .remove("show");
-
-    }
+            $("modalTitle")
+                .textContent =
+                "Edit Menu Item";
 
 
-    // =========================
-    // CLOSE WHEN CLICKING OUTSIDE
-    // =========================
+            $("saveBtn")
+                .textContent =
+                "Save Changes";
 
-    $("overlay")
-        .addEventListener(
-            "click",
-            event => {
 
-                if (
-                    event.target.id ===
-                    "overlay"
-                ) {
+            $("name").value =
+                item.name || "";
 
-                    closeModal();
+            $("cat").value =
+                item.category || "";
 
-                }
+            $("price").value =
+                item.price ?? "";
+
+            $("desc").value =
+                item.description || "";
+
+
+            // Reset file selector
+            $("imageFile").value = "";
+
+
+            // Put existing URL into URL field
+            $("imageUrl").value =
+                item.image || "";
+
+
+            // Show existing image
+            if (item.image) {
+
+                $("imagePreview").src =
+                    item.image;
+
+                $("imagePreview").style.display =
+                    "block";
+
+            } else {
+
+                $("imagePreview").src = "";
+
+                $("imagePreview").style.display =
+                    "none";
 
             }
-        );
 
 
-    // =========================
-    // ADD / EDIT SUBMIT
-    // =========================
-
-    $("itemForm")
-        .addEventListener(
-            "submit",
-            async event => {
-
-                event.preventDefault();
+            $("formError")
+                .style.display =
+                "none";
 
 
-                // Selected file
-                const file =
-                    $("imageFile").files[0];
+            $("overlay")
+                .classList
+                .add("show");
 
 
-                // Image URL
-                const imageUrlInput =
-                    $("imageUrl").value.trim();
+            $("name").focus();
+
+        }
 
 
-                const name =
-                    $("name").value.trim();
+        // =========================
+        // CLOSE MODAL
+        // =========================
 
-                const category =
-                    $("cat").value.trim();
+        function closeModal() {
 
-                const price =
-                    Number($("price").value);
+            $("overlay")
+                .classList
+                .remove("show");
 
-                const description =
-                    $("desc").value.trim();
+        }
 
 
-                // Validate
-                if (
-                    !name ||
-                    !category ||
-                    Number.isNaN(price)
-                ) {
+        // =========================
+        // CLOSE WHEN CLICKING OUTSIDE
+        // =========================
 
-                    showError(
-                        "Name, category and valid price are required."
-                    );
+        $("overlay")
+            .addEventListener(
+                "click",
+                event => {
 
-                    return;
+                    if (
+                        event.target.id ===
+                        "overlay"
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+
+        // =========================
+        // ADD / EDIT SUBMIT
+        // =========================
+        $("itemForm").addEventListener("submit", async event => {
+
+            event.preventDefault();
+
+            const file = $("imageFile").files[0];
+            const pastedImageUrl = $("imageUrl").value.trim();
+
+            const name = $("name").value.trim();
+            const category = $("cat").value.trim();
+            const price = Number($("price").value);
+            const description = $("desc").value.trim();
+
+            if (!name || !category || Number.isNaN(price)) {
+                showError("Name, category and valid price are required.");
+                return;
+            }
+
+            $("saveBtn").disabled = true;
+            $("saveBtn").textContent = "Saving...";
+
+            try {
+
+                let imageUrl = null;
+
+                // 1. FILE UPLOAD
+                if (file) {
+
+                    $("saveBtn").textContent = "Uploading image...";
+
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const uploadResponse = await fetch("/api/upload-image", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const uploadData = await uploadResponse.json();
+
+                    if (!uploadResponse.ok) {
+                        throw new Error(
+                            uploadData.message || "Image upload failed"
+                        );
+                    }
+
+                    imageUrl = uploadData.imageUrl;
 
                 }
 
+                // 2. PASTED IMAGE URL
+                else if (pastedImageUrl) {
 
-                $("saveBtn").disabled = true;
+                    imageUrl = pastedImageUrl;
+
+                }
+
+                // 3. KEEP EXISTING IMAGE WHEN EDITING
+                else if (editingId) {
+
+                    const existingItem = menu.find(
+                        item => String(item.id) === String(editingId)
+                    );
+
+                    imageUrl = existingItem?.image || null;
+                }
+
+                const payload = {
+                    name,
+                    category,
+                    price,
+                    description,
+                    image: imageUrl
+                };
+
+                const url = editingId
+                    ? `/api/menu/${encodeURIComponent(editingId)}`
+                    : "/api/menu";
+
+                const response = await fetch(url, {
+                    method: editingId ? "PUT" : "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Request failed"
+                    );
+                }
+
+                closeModal();
+
+                await loadMenu();
+
+                showToast(
+                    editingId
+                        ? "Item updated successfully"
+                        : "Item added successfully"
+                );
+
+            } catch (error) {
+
+                console.error(error);
+                showError(error.message);
+
+            } finally {
+
+                $("saveBtn").disabled = false;
 
                 $("saveBtn").textContent =
-                    "Saving...";
+                    editingId
+                        ? "Save Changes"
+                        : "Add Item";
+            }
+
+        });
+        // =========================
+        // DELETE
+        // =========================
+
+        async function removeItem(id) {
+
+            const item =
+                menu.find(
+                    product =>
+                        String(product.id) ===
+                        String(id)
+                );
 
 
-                try {
-
-                    let imageUrl = null;
+            if (!item) return;
 
 
-                    // ========================================
-                    // OPTION 1: FILE SELECTED
-                    // ========================================
-
-                    if (file) {
-
-                        $("saveBtn").textContent =
-                            "Uploading image...";
+            const confirmed =
+                confirm(
+                    `Delete "${item.name}"?\n\nThis cannot be undone.`
+                );
 
 
-                        const formData =
-                            new FormData();
-
-                        formData.append(
-                            "image",
-                            file
-                        );
+            if (!confirmed) return;
 
 
-                        const uploadResponse =
-                            await fetch(
-                                "/api/upload-image",
-                                {
-                                    method: "POST",
-                                    body: formData
-                                }
-                            );
+            try {
 
-
-                        const uploadData =
-                            await uploadResponse.json();
-
-
-                        if (!uploadResponse.ok) {
-
-                            throw new Error(
-                                uploadData.message ||
-                                "Image upload failed"
-                            );
-
+                const response =
+                    await fetch(
+                        `/api/menu/${encodeURIComponent(id)}`,
+                        {
+                            method: "DELETE"
                         }
-
-
-                        imageUrl =
-                            uploadData.imageUrl;
-
-                    }
-
-
-                    // ========================================
-                    // OPTION 2: IMAGE URL PROVIDED
-                    // ========================================
-
-                    else if (imageUrlInput) {
-
-                        imageUrl =
-                            imageUrlInput;
-
-                    }
-
-
-                    // ========================================
-                    // OPTION 3: EDIT WITHOUT NEW IMAGE
-                    // ========================================
-
-                    else if (editingId) {
-
-                        const existingItem =
-                            menu.find(
-                                item =>
-                                    String(item.id) ===
-                                    String(editingId)
-                            );
-
-
-                        imageUrl =
-                            existingItem?.image ||
-                            null;
-
-                    }
-
-
-                    // ========================================
-                    // MENU PAYLOAD
-                    // ========================================
-
-                    const payload = {
-
-                        name: name,
-
-                        category: category,
-
-                        price: price,
-
-                        description: description,
-
-                        image: imageUrl
-
-                    };
-
-
-                    // ========================================
-                    // ADD OR EDIT
-                    // ========================================
-
-                    const url =
-                        editingId
-                            ? `/api/menu/${encodeURIComponent(editingId)}`
-                            : "/api/menu";
-
-
-                    const response =
-                        await fetch(
-                            url,
-                            {
-                                method:
-                                    editingId
-                                        ? "PUT"
-                                        : "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify(
-                                        payload
-                                    )
-                            }
-                        );
-
-
-                    const data =
-                        await response.json();
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            data.message ||
-                            "Request failed"
-                        );
-
-                    }
-
-
-                    // Close modal
-                    closeModal();
-
-
-                    // Reload menu
-                    await loadMenu();
-
-
-                    // Success message
-                    showToast(
-                        editingId
-                            ? "Item updated successfully"
-                            : "Item added successfully"
                     );
 
 
-                } catch (error) {
+                const data =
+                    await response.json();
 
-                    console.error(error);
 
-                    showError(
-                        error.message
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Delete failed"
                     );
-
-
-                } finally {
-
-                    $("saveBtn").disabled =
-                        false;
-
-
-                    $("saveBtn").textContent =
-                        editingId
-                            ? "Save Changes"
-                            : "Add Item";
 
                 }
 
-            }
-        );
+
+                await loadMenu();
 
 
-    // =========================
-    // DELETE
-    // =========================
-
-    async function removeItem(id) {
-
-        const item =
-            menu.find(
-                product =>
-                    String(product.id) ===
-                    String(id)
-            );
-
-
-        if (!item) return;
-
-
-        const confirmed =
-            confirm(
-                `Delete "${item.name}"?\n\nThis cannot be undone.`
-            );
-
-
-        if (!confirmed) return;
-
-
-        try {
-
-            const response =
-                await fetch(
-                    `/api/menu/${encodeURIComponent(id)}`,
-                    {
-                        method: "DELETE"
-                    }
+                showToast(
+                    "Item deleted successfully"
                 );
 
 
-            const data =
-                await response.json();
+            } catch (error) {
 
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    "Delete failed"
+                showToast(
+                    error.message
                 );
 
             }
 
-
-            await loadMenu();
-
-
-            showToast(
-                "Item deleted successfully"
-            );
+        }
 
 
-        } catch (error) {
+        // =========================
+        // ERROR
+        // =========================
 
-            showToast(
-                error.message
+        function showError(message) {
+
+            $("formError")
+                .textContent =
+                message;
+
+            $("formError")
+                .style.display =
+                "block";
+
+        }
+
+
+        // =========================
+        // TOAST
+        // =========================
+
+        function showToast(message) {
+
+            $("toast")
+                .textContent =
+                message;
+
+            $("toast")
+                .classList
+                .add("show");
+
+
+            setTimeout(
+                () => {
+
+                    $("toast")
+                        .classList
+                        .remove("show");
+
+                },
+                2200
             );
 
         }
 
-    }
 
+        // =========================
+        // START
+        // =========================
 
-    // =========================
-    // ERROR
-    // =========================
+        checkLogin();
 
-    function showError(message) {
-
-        $("formError")
-            .textContent =
-            message;
-
-        $("formError")
-            .style.display =
-            "block";
-
-    }
-
-
-    // =========================
-    // TOAST
-    // =========================
-
-    function showToast(message) {
-
-        $("toast")
-            .textContent =
-            message;
-
-        $("toast")
-            .classList
-            .add("show");
-
-
-        setTimeout(
-            () => {
-
-                $("toast")
-                    .classList
-                    .remove("show");
-
-            },
-            2200
-        );
-
-    }
-
-
-    // =========================
-    // START
-    // =========================
-
-    checkLogin();
-
-</script>
+    </script>
 
 </body>
 

@@ -554,40 +554,54 @@
 
             return `
         <div class="card" data-product="${escapeHtml(key)}">
+
             <div class="im">
-                ${item.image
-                    ? `<img src="${escapeHtml(item.image)}"
-                                alt="${escapeHtml(item.n)}"
-                                loading="lazy"
-                                onerror="this.style.display='none'">`
+
+              ${item.image && /^https?:\/\//i.test(item.image)
+                    ? `
+            <img
+                src="${escapeHtml(item.image)}"
+                alt="${escapeHtml(item.n)}"
+                loading="lazy"
+                onerror="this.style.display='none'"
+            >
+        `
                     : pic(subcategory.n, item.n, subcategory.e)
                 }
+                ${video
+                    ? `
+                            <video
+                                class="product-hover-video"
+                                muted
+                                loop
+                                playsinline
+                                preload="metadata"
+                                aria-hidden="true"
+                            >
+                                <source src="${escapeHtml(video)}" type="video/mp4">
+                            </video>
+                        `
+                    : ""
+                }
 
-                ${video ? `
-                    <video class="product-hover-video"
-                           muted
-                           loop
-                           playsinline
-                           preload="metadata"
-                           aria-hidden="true">
-                        <source src="${video}" type="video/mp4">
-                    </video>
-                ` : ""}
             </div>
 
             <div class="in">
+
                 <div class="nm">
                     <i class="v" aria-hidden="true"></i>
                     <span>${escapeHtml(item.n)}</span>
                 </div>
 
-                <div class="pr">₹${escapeHtml(item.p)}</div>
+                <div class="pr">
+                    ₹${escapeHtml(item.p)}
+                </div>
+
             </div>
+
         </div>
     `;
-
         }
-
         // =====================================================
         // HOME PAGE
         // =====================================================
