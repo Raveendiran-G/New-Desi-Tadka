@@ -822,20 +822,23 @@
 
 
                     <div class="field full">
-
                         <label>Image</label>
 
-                        <input type="file" id="imageFile" accept="image/*">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="file" id="imageFile" accept="image/*">
+
+                            <input type="url" id="imageUrl" placeholder="Or paste image URL"
+                                style="flex:1; min-width:250px;">
+                        </div>
 
                         <img id="imagePreview" style="
-        display:none;
-        width:150px;
-        height:100px;
-        object-fit:cover;
-        margin-top:10px;
-        border-radius:10px;
-    ">
-
+            display:none;
+            width:150px;
+            height:100px;
+            object-fit:cover;
+            margin-top:10px;
+            border-radius:10px;
+        ">
                     </div>
 
                 </div>
@@ -866,342 +869,389 @@
     <div class="toast" id="toast"></div>
 
 
-    <script>
+   <script>
 
-        let menu = [];
-
-        let editingId = null;
-
-        document.getElementById("imageFile").addEventListener("change", function () {
-
-            const file = this.files[0];
-
-            if (!file) return;
-
-            const preview = document.getElementById("imagePreview");
-
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-        });
-        // =========================
-        // SHORTCUT
-        // =========================
-
-        const $ = id =>
-            document.getElementById(id);
+    let menu = [];
+    let editingId = null;
 
 
-        // =========================
-        // ESCAPE HTML
-        // =========================
+    // =========================
+    // SHORTCUT
+    // =========================
 
-        function esc(value) {
+    const $ = id => document.getElementById(id);
 
-            return String(value ?? "")
-                .replace(
-                    /[&<>'"]/g,
-                    character => ({
-                        "&": "&amp;",
-                        "<": "&lt;",
-                        ">": "&gt;",
-                        "'": "&#39;",
-                        '"': "&quot;"
-                    }[character])
-                );
+
+    // =========================
+    // IMAGE FILE PREVIEW
+    // =========================
+
+    $("imageFile").addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) return;
+
+        // If user selects a file,
+        // clear the URL field
+        $("imageUrl").value = "";
+
+        const preview = $("imagePreview");
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+
+    });
+
+
+    // =========================
+    // IMAGE URL PREVIEW
+    // =========================
+
+    $("imageUrl").addEventListener("input", function () {
+
+        const url = this.value.trim();
+        const preview = $("imagePreview");
+
+        // If URL is empty
+        if (!url) {
+
+            preview.src = "";
+            preview.style.display = "none";
+
+            return;
         }
 
+        // Show URL preview
+        preview.src = url;
+        preview.style.display = "block";
 
-        // =========================
-        // MONEY
-        // =========================
+        // Invalid image URL
+        preview.onerror = function () {
 
-        function money(value) {
+            preview.style.display = "none";
 
-            return "₹" +
-                Number(value || 0)
-                    .toLocaleString("en-IN");
-        }
+        };
+
+    });
 
 
-        // =========================
-        // CHECK LOGIN
-        // =========================
+    // =========================
+    // ESCAPE HTML
+    // =========================
 
-        async function checkLogin() {
+    function esc(value) {
 
-            try {
+        return String(value ?? "")
+            .replace(
+                /[&<>'"]/g,
+                character => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    "'": "&#39;",
+                    '"': "&quot;"
+                }[character])
+            );
 
-                const response =
-                    await fetch(
-                        "/api/admin/check"
-                    );
+    }
 
-                const data =
-                    await response.json();
 
-                if (data.loggedIn) {
+    // =========================
+    // MONEY
+    // =========================
 
-                    showDashboard();
+    function money(value) {
 
-                }
+        return "₹" +
+            Number(value || 0)
+                .toLocaleString("en-IN");
 
-            } catch (error) {
+    }
 
-                console.error(error);
+
+    // =========================
+    // CHECK LOGIN
+    // =========================
+
+    async function checkLogin() {
+
+        try {
+
+            const response =
+                await fetch("/api/admin/check");
+
+            const data =
+                await response.json();
+
+            if (data.loggedIn) {
+
+                showDashboard();
 
             }
+
+        } catch (error) {
+
+            console.error(error);
+
         }
 
+    }
 
-        // =========================
-        // LOGIN
-        // =========================
 
-        $("loginForm")
-            .addEventListener(
-                "submit",
-                async event => {
+    // =========================
+    // LOGIN
+    // =========================
 
-                    event.preventDefault();
+    $("loginForm")
+        .addEventListener(
+            "submit",
+            async event => {
 
-                    const username =
-                        $("username").value.trim();
+                event.preventDefault();
 
-                    const password =
-                        $("password").value;
+                const username =
+                    $("username").value.trim();
 
-                    try {
+                const password =
+                    $("password").value;
 
-                        const response =
-                            await fetch(
-                                "/api/admin/login",
-                                {
-                                    method: "POST",
+                try {
 
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
+                    const response =
+                        await fetch(
+                            "/api/admin/login",
+                            {
+                                method: "POST",
 
-                                    body: JSON.stringify({
-                                        username,
-                                        password
-                                    })
-                                }
-                            );
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
 
-                        const data =
-                            await response.json();
+                                body: JSON.stringify({
+                                    username,
+                                    password
+                                })
+                            }
+                        );
 
-                        if (!response.ok) {
+                    const data =
+                        await response.json();
 
-                            $("loginError")
-                                .style.display = "block";
-
-                            $("loginError")
-                                .textContent =
-                                data.message ||
-                                "Login failed";
-
-                            return;
-                        }
-
-                        $("loginError")
-                            .style.display = "none";
-
-                        showDashboard();
-
-                    } catch (error) {
+                    if (!response.ok) {
 
                         $("loginError")
                             .style.display = "block";
 
                         $("loginError")
                             .textContent =
-                            "Could not connect to server.";
+                            data.message ||
+                            "Login failed";
 
+                        return;
                     }
 
-                }
-            );
+                    $("loginError")
+                        .style.display = "none";
 
+                    showDashboard();
 
-        // =========================
-        // SHOW DASHBOARD
-        // =========================
+                } catch (error) {
 
-        function showDashboard() {
+                    $("loginError")
+                        .style.display = "block";
 
-            $("loginPage")
-                .style.display = "none";
-
-            $("dashboard")
-                .style.display = "block";
-
-            loadMenu();
-        }
-
-
-        // =========================
-        // LOGOUT
-        // =========================
-
-        async function logout() {
-
-            await fetch(
-                "/api/admin/logout",
-                {
-                    method: "POST"
-                }
-            );
-
-            location.reload();
-        }
-
-
-        // =========================
-        // LOAD MENU
-        // =========================
-
-        async function loadMenu() {
-
-            try {
-
-                const response =
-                    await fetch("/api/menu");
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Could not load menu"
-                    );
+                    $("loginError")
+                        .textContent =
+                        "Could not connect to server.";
 
                 }
 
-                menu =
-                    await response.json();
+            }
+        );
 
-                fillCategories();
 
-                render();
+    // =========================
+    // SHOW DASHBOARD
+    // =========================
 
-            } catch (error) {
+    function showDashboard() {
 
-                showToast(
+        $("loginPage")
+            .style.display = "none";
+
+        $("dashboard")
+            .style.display = "block";
+
+        loadMenu();
+
+    }
+
+
+    // =========================
+    // LOGOUT
+    // =========================
+
+    async function logout() {
+
+        await fetch(
+            "/api/admin/logout",
+            {
+                method: "POST"
+            }
+        );
+
+        location.reload();
+
+    }
+
+
+    // =========================
+    // LOAD MENU
+    // =========================
+
+    async function loadMenu() {
+
+        try {
+
+            const response =
+                await fetch("/api/menu");
+
+            if (!response.ok) {
+
+                throw new Error(
                     "Could not load menu"
                 );
 
-                console.error(error);
-
             }
 
-        }
+            menu =
+                await response.json();
 
+            fillCategories();
 
-        // =========================
-        // CATEGORY LIST
-        // =========================
+            render();
 
-        function fillCategories() {
+        } catch (error) {
 
-            const categories = [
-                ...new Set(
-                    menu
-                        .map(item => item.category)
-                        .filter(Boolean)
-                )
-            ].sort(
-                (a, b) =>
-                    a.localeCompare(b)
+            showToast(
+                "Could not load menu"
             );
 
-            const selected =
-                $("category").value;
+            console.error(error);
 
-            $("category").innerHTML =
-                `<option value="">
-            All categories
-        </option>` +
-
-                categories
-                    .map(
-                        category =>
-                            `<option value="${esc(category)}">
-                        ${esc(category)}
-                    </option>`
-                    )
-                    .join("");
-
-            $("category").value =
-                selected;
-
-
-            $("catList").innerHTML =
-                categories
-                    .map(
-                        category =>
-                            `<option value="${esc(category)}">`
-                    )
-                    .join("");
         }
 
-
-        // =========================
-        // RENDER
-        // =========================
-
-        function render() {
-
-            const search =
-                $("search")
-                    .value
-                    .trim()
-                    .toLowerCase();
-
-            const category =
-                $("category").value;
+    }
 
 
-            const filtered =
-                menu.filter(item => {
+    // =========================
+    // CATEGORY LIST
+    // =========================
 
-                    const matchesCategory =
-                        !category ||
-                        item.category === category;
+    function fillCategories() {
 
-                    const matchesSearch =
-                        !search ||
-                        [
-                            item.name,
-                            item.category,
-                            item.description
-                        ]
-                            .some(
-                                value =>
-                                    String(value || "")
-                                        .toLowerCase()
-                                        .includes(search)
-                            );
+        const categories = [
+            ...new Set(
+                menu
+                    .map(item => item.category)
+                    .filter(Boolean)
+            )
+        ].sort(
+            (a, b) =>
+                a.localeCompare(b)
+        );
 
-                    return (
-                        matchesCategory &&
-                        matchesSearch
-                    );
-                });
+        const selected =
+            $("category").value;
+
+        $("category").innerHTML =
+            `<option value="">
+                All categories
+            </option>` +
+
+            categories
+                .map(
+                    category =>
+                        `<option value="${esc(category)}">
+                            ${esc(category)}
+                        </option>`
+                )
+                .join("");
+
+        $("category").value =
+            selected;
 
 
-            $("count").textContent =
-                `Showing ${filtered.length} of ${menu.length} items`;
+        $("catList").innerHTML =
+            categories
+                .map(
+                    category =>
+                        `<option value="${esc(category)}">`
+                )
+                .join("");
+
+    }
 
 
-            $("rows").innerHTML =
-                filtered.length
+    // =========================
+    // RENDER
+    // =========================
 
-                    ?
+    function render() {
 
-                    filtered
-                        .map(
-                            item => `
+        const search =
+            $("search")
+                .value
+                .trim()
+                .toLowerCase();
+
+        const category =
+            $("category").value;
+
+
+        const filtered =
+            menu.filter(item => {
+
+                const matchesCategory =
+                    !category ||
+                    item.category === category;
+
+                const matchesSearch =
+                    !search ||
+                    [
+                        item.name,
+                        item.category,
+                        item.description
+                    ]
+                        .some(
+                            value =>
+                                String(value || "")
+                                    .toLowerCase()
+                                    .includes(search)
+                        );
+
+                return (
+                    matchesCategory &&
+                    matchesSearch
+                );
+
+            });
+
+
+        $("count").textContent =
+            `Showing ${filtered.length} of ${menu.length} items`;
+
+
+        $("rows").innerHTML =
+            filtered.length
+
+                ?
+
+                filtered
+                    .map(
+                        item => `
                     <tr>
 
                         <td>
@@ -1255,496 +1305,560 @@
 
                     </tr>
                 `
-                        )
-                        .join("")
+                    )
+                    .join("")
 
-                    :
+                :
 
-                    `
-            <tr>
+                `
+                    <tr>
 
-                <td colspan="5">
+                        <td colspan="5">
 
-                    <div class="empty">
-                        No menu items found.
-                    </div>
+                            <div class="empty">
+                                No menu items found.
+                            </div>
 
-                </td>
+                        </td>
 
-            </tr>
-        `;
-        }
+                    </tr>
+                `;
 
-
-        // =========================
-        // ADD
-        // =========================
-        function openAdd() {
-
-            editingId = null;
-
-            $("modalTitle").textContent = "Add Menu Item";
-
-            $("saveBtn").textContent = "Add Item";
-
-            $("itemForm").reset();
-
-            // Clear image preview
-            $("imagePreview").src = "";
-            $("imagePreview").style.display = "none";
-
-            $("formError").style.display = "none";
-
-            $("overlay").classList.add("show");
-
-            $("name").focus();
-        }
+    }
 
 
-        // =========================
-        // EDIT
-        // =========================
-        function openEdit(id) {
+    // =========================
+    // ADD
+    // =========================
 
-            const item =
-                menu.find(
-                    product =>
-                        String(product.id) ===
-                        String(id)
-                );
+    function openAdd() {
 
-            if (!item) return;
+        editingId = null;
 
-            editingId = id;
+        $("modalTitle").textContent =
+            "Add Menu Item";
 
-            $("modalTitle")
-                .textContent =
-                "Edit Menu Item";
+        $("saveBtn").textContent =
+            "Add Item";
 
-            $("saveBtn")
-                .textContent =
-                "Save Changes";
-
-            $("name").value =
-                item.name || "";
-
-            $("cat").value =
-                item.category || "";
-
-            $("price").value =
-                item.price ?? "";
-
-            $("desc").value =
-                item.description || "";
-
-            // Reset file selector
-            $("imageFile").value = "";
-
-            // Show existing image
-            if (item.image) {
-
-                $("imagePreview").src =
-                    item.image;
-
-                $("imagePreview").style.display =
-                    "block";
-
-            } else {
-
-                $("imagePreview").src = "";
-
-                $("imagePreview").style.display =
-                    "none";
-            }
-
-            $("formError")
-                .style.display =
-                "none";
-
-            $("overlay")
-                .classList
-                .add("show");
-
-            $("name").focus();
-        }
-
-        // =========================
-        // CLOSE MODAL
-        // =========================
-
-        function closeModal() {
-
-            $("overlay")
-                .classList
-                .remove("show");
-        }
+        $("itemForm").reset();
 
 
-        // =========================
-        // CLOSE WHEN CLICKING OUTSIDE
-        // =========================
+        // Clear image preview
+        $("imagePreview").src = "";
+        $("imagePreview").style.display = "none";
+
+
+        // Clear image URL
+        $("imageUrl").value = "";
+
+
+        $("formError").style.display =
+            "none";
 
         $("overlay")
-            .addEventListener(
-                "click",
-                event => {
+            .classList
+            .add("show");
 
-                    if (
-                        event.target.id ===
-                        "overlay"
-                    ) {
+        $("name").focus();
 
-                        closeModal();
+    }
 
-                    }
 
-                }
+    // =========================
+    // EDIT
+    // =========================
+
+    function openEdit(id) {
+
+        const item =
+            menu.find(
+                product =>
+                    String(product.id) ===
+                    String(id)
             );
 
-
-        // =========================
-        // ADD / EDIT SUBMIT
-        // =========================
-
-        $("itemForm")
-            .addEventListener(
-                "submit",
-                async event => {
-
-                    event.preventDefault();
-
-                    const file =
-                        $("imageFile").files[0];
+        if (!item) return;
 
 
-                    const name =
-                        $("name").value.trim();
-
-                    const category =
-                        $("cat").value.trim();
-
-                    const price =
-                        Number($("price").value);
-
-                    const description =
-                        $("desc").value.trim();
+        editingId = id;
 
 
-                    if (
-                        !name ||
-                        !category ||
-                        Number.isNaN(price)
-                    ) {
+        $("modalTitle")
+            .textContent =
+            "Edit Menu Item";
 
-                        showError(
-                            "Name, category and valid price are required."
+
+        $("saveBtn")
+            .textContent =
+            "Save Changes";
+
+
+        $("name").value =
+            item.name || "";
+
+        $("cat").value =
+            item.category || "";
+
+        $("price").value =
+            item.price ?? "";
+
+        $("desc").value =
+            item.description || "";
+
+
+        // Reset file selector
+        $("imageFile").value = "";
+
+
+        // Put existing URL into URL field
+        $("imageUrl").value =
+            item.image || "";
+
+
+        // Show existing image
+        if (item.image) {
+
+            $("imagePreview").src =
+                item.image;
+
+            $("imagePreview").style.display =
+                "block";
+
+        } else {
+
+            $("imagePreview").src = "";
+
+            $("imagePreview").style.display =
+                "none";
+
+        }
+
+
+        $("formError")
+            .style.display =
+            "none";
+
+
+        $("overlay")
+            .classList
+            .add("show");
+
+
+        $("name").focus();
+
+    }
+
+
+    // =========================
+    // CLOSE MODAL
+    // =========================
+
+    function closeModal() {
+
+        $("overlay")
+            .classList
+            .remove("show");
+
+    }
+
+
+    // =========================
+    // CLOSE WHEN CLICKING OUTSIDE
+    // =========================
+
+    $("overlay")
+        .addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target.id ===
+                    "overlay"
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+    // =========================
+    // ADD / EDIT SUBMIT
+    // =========================
+
+    $("itemForm")
+        .addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                // Selected file
+                const file =
+                    $("imageFile").files[0];
+
+
+                // Image URL
+                const imageUrlInput =
+                    $("imageUrl").value.trim();
+
+
+                const name =
+                    $("name").value.trim();
+
+                const category =
+                    $("cat").value.trim();
+
+                const price =
+                    Number($("price").value);
+
+                const description =
+                    $("desc").value.trim();
+
+
+                // Validate
+                if (
+                    !name ||
+                    !category ||
+                    Number.isNaN(price)
+                ) {
+
+                    showError(
+                        "Name, category and valid price are required."
+                    );
+
+                    return;
+
+                }
+
+
+                $("saveBtn").disabled = true;
+
+                $("saveBtn").textContent =
+                    "Saving...";
+
+
+                try {
+
+                    let imageUrl = null;
+
+
+                    // ========================================
+                    // OPTION 1: FILE SELECTED
+                    // ========================================
+
+                    if (file) {
+
+                        $("saveBtn").textContent =
+                            "Uploading image...";
+
+
+                        const formData =
+                            new FormData();
+
+                        formData.append(
+                            "image",
+                            file
                         );
 
-                        return;
-                    }
 
-
-                    $("saveBtn").disabled = true;
-
-                    $("saveBtn").textContent =
-                        "Saving...";
-
-
-                    try {
-
-                        let imageUrl = null;
-
-
-                        // ========================================
-                        // UPLOAD IMAGE IF ONE WAS SELECTED
-                        // ========================================
-
-                        if (file) {
-
-                            $("saveBtn").textContent =
-                                "Uploading image...";
-
-
-                            const formData =
-                                new FormData();
-
-                            formData.append(
-                                "image",
-                                file
-                            );
-
-
-                            const uploadResponse =
-                                await fetch(
-                                    "/api/upload-image",
-                                    {
-                                        method: "POST",
-                                        body: formData
-                                    }
-                                );
-
-
-                            const uploadData =
-                                await uploadResponse.json();
-
-
-                            if (!uploadResponse.ok) {
-
-                                throw new Error(
-                                    uploadData.message ||
-                                    "Image upload failed"
-                                );
-
-                            }
-
-
-                            imageUrl =
-                                uploadData.imageUrl;
-                        }
-
-
-                        // ========================================
-                        // KEEP OLD IMAGE WHEN EDITING
-                        // ========================================
-
-                        if (
-                            editingId &&
-                            !file
-                        ) {
-
-                            const existingItem =
-                                menu.find(
-                                    item =>
-                                        String(item.id) ===
-                                        String(editingId)
-                                );
-
-                            imageUrl =
-                                existingItem?.image ||
-                                null;
-                        }
-
-
-                        // ========================================
-                        // MENU PAYLOAD
-                        // ========================================
-
-                        const payload = {
-
-                            name: name,
-
-                            category: category,
-
-                            price: price,
-
-                            description: description,
-
-                            image: imageUrl
-
-                        };
-
-
-                        // ========================================
-                        // ADD OR EDIT
-                        // ========================================
-
-                        const url =
-                            editingId
-                                ? `/api/menu/${encodeURIComponent(editingId)}`
-                                : "/api/menu";
-
-
-                        const response =
+                        const uploadResponse =
                             await fetch(
-                                url,
+                                "/api/upload-image",
                                 {
-                                    method:
-                                        editingId
-                                            ? "PUT"
-                                            : "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json"
-                                    },
-
-                                    body:
-                                        JSON.stringify(
-                                            payload
-                                        )
+                                    method: "POST",
+                                    body: formData
                                 }
                             );
 
 
-                        const data =
-                            await response.json();
+                        const uploadData =
+                            await uploadResponse.json();
 
 
-                        if (!response.ok) {
+                        if (!uploadResponse.ok) {
 
                             throw new Error(
-                                data.message ||
-                                "Request failed"
+                                uploadData.message ||
+                                "Image upload failed"
                             );
 
                         }
 
 
-                        closeModal();
-
-                        await loadMenu();
-
-
-                        showToast(
-                            editingId
-                                ? "Item updated successfully"
-                                : "Item added successfully"
-                        );
-
-
-                    } catch (error) {
-
-                        console.error(error);
-
-                        showError(
-                            error.message
-                        );
-
-
-                    } finally {
-
-                        $("saveBtn").disabled =
-                            false;
-
-                        $("saveBtn").textContent =
-                            editingId
-                                ? "Save Changes"
-                                : "Add Item";
+                        imageUrl =
+                            uploadData.imageUrl;
 
                     }
 
+
+                    // ========================================
+                    // OPTION 2: IMAGE URL PROVIDED
+                    // ========================================
+
+                    else if (imageUrlInput) {
+
+                        imageUrl =
+                            imageUrlInput;
+
+                    }
+
+
+                    // ========================================
+                    // OPTION 3: EDIT WITHOUT NEW IMAGE
+                    // ========================================
+
+                    else if (editingId) {
+
+                        const existingItem =
+                            menu.find(
+                                item =>
+                                    String(item.id) ===
+                                    String(editingId)
+                            );
+
+
+                        imageUrl =
+                            existingItem?.image ||
+                            null;
+
+                    }
+
+
+                    // ========================================
+                    // MENU PAYLOAD
+                    // ========================================
+
+                    const payload = {
+
+                        name: name,
+
+                        category: category,
+
+                        price: price,
+
+                        description: description,
+
+                        image: imageUrl
+
+                    };
+
+
+                    // ========================================
+                    // ADD OR EDIT
+                    // ========================================
+
+                    const url =
+                        editingId
+                            ? `/api/menu/${encodeURIComponent(editingId)}`
+                            : "/api/menu";
+
+
+                    const response =
+                        await fetch(
+                            url,
+                            {
+                                method:
+                                    editingId
+                                        ? "PUT"
+                                        : "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        payload
+                                    )
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.message ||
+                            "Request failed"
+                        );
+
+                    }
+
+
+                    // Close modal
+                    closeModal();
+
+
+                    // Reload menu
+                    await loadMenu();
+
+
+                    // Success message
+                    showToast(
+                        editingId
+                            ? "Item updated successfully"
+                            : "Item added successfully"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    showError(
+                        error.message
+                    );
+
+
+                } finally {
+
+                    $("saveBtn").disabled =
+                        false;
+
+
+                    $("saveBtn").textContent =
+                        editingId
+                            ? "Save Changes"
+                            : "Add Item";
+
                 }
+
+            }
+        );
+
+
+    // =========================
+    // DELETE
+    // =========================
+
+    async function removeItem(id) {
+
+        const item =
+            menu.find(
+                product =>
+                    String(product.id) ===
+                    String(id)
             );
 
-        // =========================
-        // DELETE
-        // =========================
 
-        async function removeItem(id) {
-
-            const item =
-                menu.find(
-                    product =>
-                        String(product.id) ===
-                        String(id)
-                );
-
-            if (!item) return;
+        if (!item) return;
 
 
-            const confirmed =
-                confirm(
-                    `Delete "${item.name}"?\n\nThis cannot be undone.`
-                );
+        const confirmed =
+            confirm(
+                `Delete "${item.name}"?\n\nThis cannot be undone.`
+            );
 
 
-            if (!confirmed) return;
+        if (!confirmed) return;
 
 
-            try {
+        try {
 
-                const response =
-                    await fetch(
-                        `/api/menu/${encodeURIComponent(id)}`,
-                        {
-                            method: "DELETE"
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        data.message ||
-                        "Delete failed"
-                    );
-
-                }
-
-
-                await loadMenu();
-
-                showToast(
-                    "Item deleted successfully"
+            const response =
+                await fetch(
+                    `/api/menu/${encodeURIComponent(id)}`,
+                    {
+                        method: "DELETE"
+                    }
                 );
 
 
-            } catch (error) {
+            const data =
+                await response.json();
 
-                showToast(
-                    error.message
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Delete failed"
                 );
 
             }
 
-        }
+
+            await loadMenu();
 
 
-        // =========================
-        // ERROR
-        // =========================
-
-        function showError(message) {
-
-            $("formError")
-                .textContent =
-                message;
-
-            $("formError")
-                .style.display =
-                "block";
-        }
-
-
-        // =========================
-        // TOAST
-        // =========================
-
-        function showToast(message) {
-
-            $("toast")
-                .textContent =
-                message;
-
-            $("toast")
-                .classList
-                .add("show");
-
-
-            setTimeout(
-                () => {
-
-                    $("toast")
-                        .classList
-                        .remove("show");
-
-                },
-                2200
+            showToast(
+                "Item deleted successfully"
             );
+
+
+        } catch (error) {
+
+            showToast(
+                error.message
+            );
+
         }
 
+    }
 
-        // =========================
-        // START
-        // =========================
 
-        checkLogin();
+    // =========================
+    // ERROR
+    // =========================
 
-    </script>
+    function showError(message) {
+
+        $("formError")
+            .textContent =
+            message;
+
+        $("formError")
+            .style.display =
+            "block";
+
+    }
+
+
+    // =========================
+    // TOAST
+    // =========================
+
+    function showToast(message) {
+
+        $("toast")
+            .textContent =
+            message;
+
+        $("toast")
+            .classList
+            .add("show");
+
+
+        setTimeout(
+            () => {
+
+                $("toast")
+                    .classList
+                    .remove("show");
+
+            },
+            2200
+        );
+
+    }
+
+
+    // =========================
+    // START
+    // =========================
+
+    checkLogin();
+
+</script>
 
 </body>
 
