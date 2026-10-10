@@ -905,14 +905,19 @@
         // LOAD MENU
         // =====================================================
         async function loadMenu() {
-            // Render cache first, so the screen is not blank while the API loads.
+            let hasCachedMenu = false;
+
+            // 1. Display cached menu immediately.
             try {
                 const cached = localStorage.getItem("desiTadkaMenu");
+
                 if (cached) {
                     const products = JSON.parse(cached);
                     const cachedData = convertProducts(products);
-                    if (cachedData.length) {
+
+                    if (cachedData.length > 0) {
                         D = cachedData;
+                        hasCachedMenu = true;
                         goHome();
                     }
                 }
@@ -920,17 +925,18 @@
                 console.warn("Could not load cached menu:", error);
             }
 
-            // Show a visible loading state if there is no cached menu.
-            if (!D.length) {
+            // 2. Show a loading state only when there is no cached menu.
+            if (!hasCachedMenu) {
                 home();
             }
 
-            // Get the latest menu from the server.
+            // 3. Fetch the latest menu from the server.
             try {
                 const response = await fetch("/api/menu", {
                     method: "GET",
-                    headers: { "Accept": "application/json" },
-                    cache: "no-store"
+                    headers: {
+                        Accept: "application/json"
+                    }
                 });
 
                 if (!response.ok) {
@@ -938,27 +944,112 @@
                 }
 
                 const products = await response.json();
+
+                if (!Array.isArray(products)) {
+                    throw new Error("Invalid menu response");
+                }
+
                 const latestData = convertProducts(products);
 
-                if (!latestData.length) {
+                if (latestData.length === 0) {
                     throw new Error("Menu API returned no products");
                 }
 
-                localStorage.setItem("desiTadkaMenu", JSON.stringify(products));
-                D = latestData;
+                // 4. Update the cache only when necessary.
+                const latestJSON = JSON.stringify(products);
+                const cachedJSON = localStorage.getItem("desiTadkaMenu");
 
-                // Only redraw home if the user is currently on home.
-                if (cur == null) {
-                    goHome();
+                if (latestJSON !== cachedJSON) {
+                    localStorage.setItem("desiTadkaMenu", latestJSON);
+
+                    D = latestData;
+
+                    // Redraw only if the user is still on the home page.
+                    if (cur == null) {
+                        goHome();
+                    }
                 }
 
-                console.log("Menu loaded successfully:", products.length, "products");
+                console.log(
+                    "Menu loaded successfully:",
+                    products.length,
+                    "products"
+                );
+
             } catch (error) {
                 console.error("Menu loading error:", error);
 
-                // Keep cached data if available. Otherwise show a useful message.
-                if (!D.length) {
+                // Preserve cached data if available.
+                if (!hasCachedMenu && !D.length) {
                     $("out").innerHTML = `
+                <h1>Menu</h1>
+                <div class="menu-message error">
+                    <strong>Unable to load the menu</strong>
+                    <p>Please check your connection and try again.</p>
+                    <button id="retryMenu" type="button">
+                        Retry
+                    </button>
+                </div>
+            `;
+
+                    $("retryMenu").onclick = loadMenu;
+                }
+            }
+        }
+        // Render cache first, so the screen is not blank while the API loads.
+        try {
+            const cached = localStorage.getItem("desiTadkaMenu");
+            if (cached) {
+                const products = JSON.parse(cached);
+                const cachedData = convertProducts(products);
+                if (cachedData.length) {
+                    D = cachedData;
+                    goHome();
+                }
+            }
+        } catch (error) {
+            console.warn("Could not load cached menu:", error);
+        }
+
+        // Show a visible loading state if there is no cached menu.
+        if (!D.length) {
+            home();
+        }
+
+        // Get the latest menu from the server.
+        try {
+            const response = await fetch("/api/menu", {
+                method: "GET",
+                headers: { "Accept": "application/json" },
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error(`Menu API returned HTTP ${response.status}`);
+            }
+
+            const products = await response.json();
+            const latestData = convertProducts(products);
+
+            if (!latestData.length) {
+                throw new Error("Menu API returned no products");
+            }
+
+            localStorage.setItem("desiTadkaMenu", JSON.stringify(products));
+            D = latestData;
+
+            // Only redraw home if the user is currently on home.
+            if (cur == null) {
+                goHome();
+            }
+
+            console.log("Menu loaded successfully:", products.length, "products");
+        } catch (error) {
+            console.error("Menu loading error:", error);
+
+            // Keep cached data if available. Otherwise show a useful message.
+            if (!D.length) {
+                $("out").innerHTML = `
                         <h1>Menu</h1>
                         <div class="menu-message error">
                             <strong>Unable to load the menu</strong>
@@ -967,9 +1058,9 @@
                         </div>
                     `;
 
-                    $("retryMenu").onclick = loadMenu;
-                }
+                $("retryMenu").onclick = loadMenu;
             }
+        }
         }
 
         // Start once, after every function used by loadMenu has been defined.
