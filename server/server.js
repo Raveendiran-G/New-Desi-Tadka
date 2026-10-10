@@ -1,8 +1,5 @@
 require("dotenv").config();
-console.log("ENV TEST:");
-console.log("EMAIL 1 =", process.env.ALLOWED_EMAIL_1);
-console.log("EMAIL 2 =", process.env.ALLOWED_EMAIL_2);
-console.log("SESSION SECRET EXISTS =", !!process.env.SESSION_SECRET);
+
 
 const express = require("express");
 const path = require("path");
