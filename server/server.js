@@ -1091,38 +1091,15 @@ app.get(
 // START SERVER
 // ========================================
 
-if (
-    require.main === module
-) {
-
-    app.listen(
-        PORT,
-        () => {
-
-            console.log(
-                "\n================================="
-            );
-
-            console.log(
-                " New Desi Tadka Server Started"
-            );
-
-            console.log(
-                "=================================\n"
-            );
-
-            console.log(
-                `Customer Menu: http://localhost:${PORT}`
-            );
-
-            console.log(
-                `Admin Panel:   http://localhost:${PORT}/admin\n`
-            );
-
-        }
-    );
-
+if (require.main === module) {
+    app.listen(PORT, "0.0.0.0", () => {
+        console.log("=================================");
+        console.log(" New Desi Tadka Server Started");
+        console.log(` Listening on port: ${PORT}`);
+        console.log("=================================");
+        console.log("Customer Menu: /");
+        console.log("Admin Panel: /admin");
+    });
 }
-
 
 module.exports = app;
